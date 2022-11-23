@@ -1,9 +1,9 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import lombok.Data;
 
 @Data
-public class User {
+public class UserDto {
     long id;
     String name;
     String email;
