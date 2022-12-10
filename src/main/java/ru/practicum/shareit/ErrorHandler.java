@@ -13,9 +13,15 @@ public class ErrorHandler {
 
 //    @ExceptionHandler(ValidationException.class)
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final ValidationException e) {
         return Map.of("ValidationException", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleValidationException(final DuplicateEmailException e) {
+        return Map.of("DuplicateEmailException", e.getMessage());
     }
 
     @ExceptionHandler(EntryUnknownException.class)

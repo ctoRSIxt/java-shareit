@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.DuplicateEmailException;
 import ru.practicum.shareit.ValidationException;
 import java.util.List;
 
@@ -35,6 +36,20 @@ public class UserService {
         return userStorage.update(user);
     }
 
+    public User update(long userId, User user) {
+        User userToUpdate =  userStorage.findUserById(userId);
+
+        if (user.getName() != null) {
+            userToUpdate.setName(user.getName());
+        }
+
+        if (user.getEmail() != null) {
+            validateUser(user);
+            userToUpdate.setEmail(user.getEmail());
+        }
+        return userStorage.update(userToUpdate);
+    }
+
     public User deleteById(long id) {
         return userStorage.deleteById(id);
     }
@@ -49,7 +64,7 @@ public class UserService {
 
         if (!userStorage.findUsersByEmail(user.getEmail()).isEmpty()) {
             log.info("User: Валидация не пройдена: пользователь с таким email уже существует");
-            throw new ValidationException("Два пользователя не могут иметь одинаковый адрес электронной почты");
+            throw new DuplicateEmailException("Два пользователя не могут иметь одинаковый адрес электронной почты");
         }
     }
 }
