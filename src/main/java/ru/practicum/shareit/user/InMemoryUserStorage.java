@@ -2,7 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.EntryUnknownException;
+import ru.practicum.shareit.exceptions.EntryUnknownException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

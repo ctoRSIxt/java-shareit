@@ -1,21 +1,16 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.DuplicateEmailException;
-import ru.practicum.shareit.EntryUnknownException;
-import ru.practicum.shareit.UserNotItemOwnerException;
-import ru.practicum.shareit.ValidationException;
+import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestStorage;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

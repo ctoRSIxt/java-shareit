@@ -1,15 +1,12 @@
 package ru.practicum.shareit.request;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.EntryUnknownException;
-import ru.practicum.shareit.item.ItemStorage;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.exceptions.EntryUnknownException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Component

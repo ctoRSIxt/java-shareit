@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.EntryUnknownException;
+import ru.practicum.shareit.exceptions.EntryUnknownException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;

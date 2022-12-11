@@ -3,9 +3,13 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.DuplicateEmailException;
-import ru.practicum.shareit.ValidationException;
+import ru.practicum.shareit.exceptions.DuplicateEmailException;
+import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -19,50 +23,52 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public List<User> findAll() {
-        return userStorage.findAll();
+    public List<UserDto> findAll() {
+        return userStorage.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
-    public User findById(long userId) {
-        return userStorage.findUserById(userId);
+    public UserDto findById(long userId) {
+        return UserMapper.toUserDto(userStorage.findUserById(userId));
     }
 
-    public User create(User user) {
-        validateUser(user);
-        return userStorage.create(user);
+    public UserDto create(UserDto userDto) {
+        validateUser(userDto);
+        return UserMapper.toUserDto(userStorage.create(UserMapper.toUser(userDto)));
     }
 
-    public User update(User user) {
-        return userStorage.update(user);
+    public UserDto update(UserDto userDto) {
+        return UserMapper.toUserDto(userStorage.update(UserMapper.toUser(userDto)));
     }
 
-    public User update(long userId, User user) {
-        User userToUpdate =  userStorage.findUserById(userId);
+    public UserDto update(long userId, UserDto userDto) {
+        User user =  userStorage.findUserById(userId);
 
-        if (user.getName() != null) {
-            userToUpdate.setName(user.getName());
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
         }
 
-        if (user.getEmail() != null) {
-            validateUser(user);
-            userToUpdate.setEmail(user.getEmail());
+        if (userDto.getEmail() != null) {
+            validateUser(userDto);
+            user.setEmail(userDto.getEmail());
         }
-        return userStorage.update(userToUpdate);
+        return UserMapper.toUserDto(userStorage.update(user));
     }
 
-    public User deleteById(long id) {
-        return userStorage.deleteById(id);
+    public UserDto deleteById(long id) {
+        return UserMapper.toUserDto(userStorage.deleteById(id));
     }
 
 
-    private void validateUser(User user) {
+    private void validateUser(UserDto userDto) {
 
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+        if (userDto.getEmail() == null || userDto.getEmail().isBlank() || !userDto.getEmail().contains("@")) {
             log.info("User: Валидация не пройдена: email пуст или не содержит @");
             throw new ValidationException("Электронная почта не может быть пустой и должна содержать @");
         }
 
-        if (!userStorage.findUsersByEmail(user.getEmail()).isEmpty()) {
+        if (!userStorage.findUsersByEmail(userDto.getEmail()).isEmpty()) {
             log.info("User: Валидация не пройдена: пользователь с таким email уже существует");
             throw new DuplicateEmailException("Два пользователя не могут иметь одинаковый адрес электронной почты");
         }
