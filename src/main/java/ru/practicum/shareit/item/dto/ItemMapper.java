@@ -19,7 +19,7 @@ public class ItemMapper {
                 itemDto.getId() != null ? itemDto.getId().longValue() : 0,
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getAvailable() != null ? itemDto.getAvailable().booleanValue() : false ,
+                itemDto.getAvailable() != null ? itemDto.getAvailable().booleanValue() : false,
                 null,
                 null
         );

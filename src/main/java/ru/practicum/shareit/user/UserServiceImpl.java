@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.DuplicateEmailException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -32,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(long userId, UserDto userDto) {
-        User user =  userStorage.findUserById(userId);
+        User user = userStorage.findUserById(userId);
 
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
