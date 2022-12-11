@@ -8,10 +8,9 @@ import ru.practicum.shareit.user.User;
 @Data
 @AllArgsConstructor
 public class ItemDto {
-    private long id;
+    private Long id;
     private String name;
     private String description;
-    private boolean available;
-    private User owner;
-    private ItemRequest request;
+    private Boolean available;
+    private Long requestId;
 }

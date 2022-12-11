@@ -32,7 +32,6 @@ public class UserController {
         return userService.update(userId, user);
     }
 
-
     @GetMapping
     public Collection<User> findAll() {
         return userService.findAll();
@@ -44,7 +43,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public User removeFromFriends(@PathVariable long userId) {
+    public User deleteById(@PathVariable long userId) {
         return userService.deleteById(userId);
     }
 

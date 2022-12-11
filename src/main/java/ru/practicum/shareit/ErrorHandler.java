@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
-@RestControllerAdvice("ru.practicum.shareit.user")
+@RestControllerAdvice("ru.practicum.shareit")
 //@RestControllerAdvice
 public class ErrorHandler {
 
-//    @ExceptionHandler(ValidationException.class)
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final ValidationException e) {
@@ -24,11 +23,18 @@ public class ErrorHandler {
         return Map.of("DuplicateEmailException", e.getMessage());
     }
 
-    @ExceptionHandler(EntryUnknownException.class)
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFound(final RuntimeException e) {
+    public Map<String, String> handleNotFound(final EntryUnknownException e) {
         return Map.of("ObjectNotFound", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleNotFound(final UserNotItemOwnerException e) {
+        return Map.of("UserNotItemOwnerException", e.getMessage());
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
