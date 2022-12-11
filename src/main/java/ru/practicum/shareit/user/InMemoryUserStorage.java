@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
@@ -39,19 +40,19 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        log.info("Создание (post) записи для пользователя {}", user.getId());
-
         user.setId(++idCounter);
+
+        log.info("Create (post) a record for the user with id = {}", user.getId());
         users.put(user.getId(), user);
         return user;
     }
 
     @Override
     public User update(User user) {
-        log.info("Редактирование (put) записи для пользователя {}", user.getId());
+        log.info("Edit (put) a record for the user with id = {}", user.getId());
 
         if (!users.containsKey(user.getId())) {
-            throw new EntryUnknownException("Пользователь с id = " + user.getId() + " не известен.");
+            throw new EntryUnknownException("User with id = " + user.getId() + " is unknown");
         }
 
         users.put(user.getId(), user);
@@ -61,10 +62,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User deleteById(long id) {
-        log.info("Удаление (delete) записи для пользователя {}", id);
+        log.info("Remove (delete) a record for the user with id = {}", id);
 
         if (!users.containsKey(id)) {
-            throw new EntryUnknownException("Пользователь с id = " + id + " не известен.");
+            throw new EntryUnknownException("User with id = " + id + " is unknown");
         }
 
         User user = users.get(id);

@@ -3,10 +3,6 @@ package ru.practicum.shareit.item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserService;
-
-import java.util.Collection;
 import java.util.List;
 
 
@@ -27,13 +23,11 @@ public class ItemController {
         return itemService.create(userId, itemDto);
     }
 
-
     @PatchMapping("/{itemId}")
     public ItemDto patch(@RequestHeader("X-Sharer-User-Id") long userId,
                       @PathVariable long itemId, @RequestBody ItemDto itemDto) {
         return itemService.update(userId, itemId, itemDto);
     }
-
 
     @GetMapping
     public List<ItemDto> findAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") long userId) {

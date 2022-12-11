@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -14,34 +14,26 @@ import ru.practicum.shareit.user.UserStorage;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
+@Service
+@AllArgsConstructor
 public class ItemServiceImpl implements ItemService{
 
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
     private final ItemRequestStorage requestStorage;
 
-    @Autowired
-    public ItemServiceImpl(ItemStorage itemStorage,
-                           UserStorage userStorage,
-                           ItemRequestStorage requestStorage) {
-        this.itemStorage = itemStorage;
-        this.userStorage = userStorage;
-        this.requestStorage = requestStorage;
-    }
 
     @Override
     public ItemDto create(long userId, ItemDto itemDto) {
-
         validateItemDto(itemDto);
         Item item = ItemMapper.toItem(itemDto);
-
         item.setOwner(userStorage.findUserById(userId));
 
         if (itemDto.getRequestId() != null) {
             item.setRequest(requestStorage.findById(itemDto.getRequestId()));
         }
+
         itemStorage.create(item);
         return ItemMapper.toItemDto(item);
     }
@@ -54,7 +46,6 @@ public class ItemServiceImpl implements ItemService{
         }
 
         item = ItemMapper.updateItem(item, itemDto);
-
         if (itemDto.getRequestId() != null) {
             item.setRequest(requestStorage.findById(itemDto.getRequestId()));
         }
@@ -83,14 +74,17 @@ public class ItemServiceImpl implements ItemService{
     private void validateItemDto(ItemDto itemDto) {
 
         if (itemDto.getName() == null || itemDto.getName().isBlank()) {
+            log.info("ItemDto: Validation failed: name cannot be null or empty");
             throw new ValidationException("Name is not specified");
         }
 
         if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
+            log.info("ItemDto: Validation failed: description cannot be null or empty");
             throw new ValidationException("Description is not specified");
         }
 
         if (itemDto.getAvailable() == null) {
+            log.info("ItemDto: Validation failed: availability should be specified");
             throw new ValidationException("Available is not specified");
         }
     }

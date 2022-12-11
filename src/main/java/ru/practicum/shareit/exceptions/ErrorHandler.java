@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 
 @RestControllerAdvice("ru.practicum.shareit")
-//@RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler
@@ -34,7 +33,6 @@ public class ErrorHandler {
     public Map<String, String> handleNotFound(final UserNotItemOwnerException e) {
         return Map.of("UserNotItemOwnerException", e.getMessage());
     }
-
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

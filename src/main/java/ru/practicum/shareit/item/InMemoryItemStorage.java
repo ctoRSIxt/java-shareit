@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
 import ru.practicum.shareit.item.model.Item;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class InMemoryItemStorage implements ItemStorage {
 
@@ -20,13 +22,15 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public Item create(Item item) {
         item.setId(++idCounter);
+
+        log.info("Create (post) a record for the item with id = {}", item.getId());
         items.put(item.getId(), item);
         return item;
     }
 
     @Override
     public Item update(Item item) {
-
+        log.info("Edit (put) a record for the item with id = {}", item.getId());
         if (!items.containsKey(item.getId())) {
             throw new EntryUnknownException("No item with id = " + item.getId());
         }
