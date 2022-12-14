@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.DuplicateEmailException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 
@@ -62,12 +61,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUser(UserDto userDto) {
-
-        if (userDto.getEmail() == null || userDto.getEmail().isBlank() || !userDto.getEmail().contains("@")) {
-            log.info("User: Validation failed: email is empty or contains no @");
-            throw new ValidationException("Email cannot be empty or contain no @");
-        }
-
         if (!userStorage.findUsersByEmail(userDto.getEmail()).isEmpty()) {
             log.info("User: Validation failed: user with this email already exists");
             throw new DuplicateEmailException("Two users cannot have the same email");

@@ -44,7 +44,18 @@ public class ItemServiceImpl implements ItemService {
             throw new UserNotItemOwnerException("The user is not the owner of the item");
         }
 
-        item = ItemMapper.updateItem(item, itemDto);
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
+        }
+
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
+        }
+
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
+        }
+
         if (itemDto.getRequestId() != null) {
             item.setRequest(requestStorage.findById(itemDto.getRequestId()));
         }
