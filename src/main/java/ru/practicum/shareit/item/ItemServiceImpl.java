@@ -26,7 +26,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(long userId, ItemDto itemDto) {
-        validateItemDto(itemDto);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userStorage.findUserById(userId));
 
@@ -70,24 +69,5 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
-
-    private void validateItemDto(ItemDto itemDto) {
-
-        if (itemDto.getName() == null || itemDto.getName().isBlank()) {
-            log.info("ItemDto: Validation failed: name cannot be null or empty");
-            throw new ValidationException("Name is not specified");
-        }
-
-        if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
-            log.info("ItemDto: Validation failed: description cannot be null or empty");
-            throw new ValidationException("Description is not specified");
-        }
-
-        if (itemDto.getAvailable() == null) {
-            log.info("ItemDto: Validation failed: availability should be specified");
-            throw new ValidationException("Available is not specified");
-        }
-    }
-
 
 }
