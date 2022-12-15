@@ -1,12 +1,49 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemDto;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.validation.Valid;
+import java.util.List;
+
+
 @RestController
-@RequestMapping("/items")
+@RequestMapping(path = "/items")
 public class ItemController {
+
+    private final ItemService itemService;
+
+    @Autowired
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @PostMapping
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId,
+                          @Valid @RequestBody ItemDto itemDto) {
+        return itemService.create(userId, itemDto);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto patch(@RequestHeader("X-Sharer-User-Id") long userId,
+                         @PathVariable long itemId, @RequestBody ItemDto itemDto) {
+        return itemService.update(userId, itemId, itemDto);
+    }
+
+    @GetMapping
+    public List<ItemDto> findAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.findAllItemsByOwner(userId);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto findById(@PathVariable long itemId) {
+        return itemService.findById(itemId);
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> findByText(@RequestParam String text) {
+        return itemService.findByText(text);
+    }
+
 }
