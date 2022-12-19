@@ -72,7 +72,7 @@ public class InMemoryItemStorage implements ItemStorage {
         return items.values().stream()
                 .filter(item -> (item.getDescription().toLowerCase().contains(textLower)
                         || item.getName().toLowerCase().contains(textLower)))
-                .filter(item -> item.isAvailable())
+                .filter(item -> item.getAvailable())
                 .collect(Collectors.toList());
     }
 }
