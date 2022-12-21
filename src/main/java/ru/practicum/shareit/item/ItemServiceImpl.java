@@ -8,8 +8,8 @@ import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequestStorage;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-    private final ItemRequestStorage requestStorage;
+    private final ItemRequestRepository requestRepository;
 
 
     @Override
@@ -37,7 +37,8 @@ public class ItemServiceImpl implements ItemService {
         item.setOwner(owner);
 
         if (itemDto.getRequestId() != null) {
-            item.setRequest(requestStorage.findById(itemDto.getRequestId()));
+            item.setRequest(requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new EntryUnknownException("No itemRequest with id = " + itemDto.getRequestId())));
         }
 
         itemRepository.save(item);
@@ -67,7 +68,8 @@ public class ItemServiceImpl implements ItemService {
         }
 
         if (itemDto.getRequestId() != null) {
-            item.setRequest(requestStorage.findById(itemDto.getRequestId()));
+            item.setRequest(requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new EntryUnknownException("No itemRequest with id = " + itemDto.getRequestId())));
         }
 
         itemRepository.save(item);
