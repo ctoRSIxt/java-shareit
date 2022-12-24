@@ -3,15 +3,19 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
 import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +28,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemRequestRepository requestRepository;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
 
     @Override
@@ -97,6 +103,21 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.searchItemsByText(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Comment createComment(Comment comment, long itemId, long userId) {
+
+        if (bookingRepository.findByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now())
+                .isEmpty()) {
+            throw new ValidationException("No completed bookings of item " + itemId + " by user" + userId);
+        }
+
+        comment.setAuthorId(userId);
+        comment.setItemId(itemId);
+        comment.setCreated(LocalDateTime.now());
+        commentRepository.save(comment);
+        return comment;
     }
 
 }
