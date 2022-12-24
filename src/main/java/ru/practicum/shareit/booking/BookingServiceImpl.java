@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
 
     private final UserService userService;
-    private final ItemService itemService;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
@@ -37,11 +36,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto create(long userId, BookingDto bookingDto) {
 
         validateBookingDto(userId, bookingDto);
-        return BookingMapper.toBookingDto(
-                bookingRepository.save(
-                        mapToBooking(userId, bookingDto)
-                )
-        );
+        return BookingMapper.toBookingDto(bookingRepository.save(mapToBooking(userId, bookingDto)));
 
     }
 
@@ -86,36 +81,27 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case PAST:
-                result = bookingRepository
-                        .findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now());
+                result = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now());
                 break;
             case FUTURE:
-                result = bookingRepository
-                        .findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now());
+                result = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now());
                 break;
             case CURRENT:
-                result = bookingRepository
-                        .findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId
-                                , LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, LocalDateTime.now(), LocalDateTime.now());
                 break;
             case REJECTED:
-                result = bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED);
+                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED);
                 break;
             case WAITING:
-                result = bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING);
+                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING);
                 break;
             default:
                 result = bookingRepository.findByBookerIdOrderByStartDesc(bookerId);
         }
 
-        return result.stream()
-                .map(booking -> {
-                    return setItemAndBooker(booking);
-                })
-                .map(BookingMapper::toBookingDto)
-                .collect(Collectors.toList());
+        return result.stream().map(booking -> {
+            return setItemAndBooker(booking);
+        }).map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     @Override
@@ -124,7 +110,8 @@ public class BookingServiceImpl implements BookingService {
         State state = validateState(stateString);
         List<Booking> result;
 
-        List<Long> itemIds = itemRepository.findAllByOwnerIdOrderById(ownerId)
+        List<Long> itemIds = itemRepository
+                .findAllByOwnerIdOrderById(ownerId)
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
@@ -141,8 +128,8 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case CURRENT:
                 result = bookingRepository
-                        .findByItemIdInAndStartBeforeAndEndAfterOrderByStartDesc(itemIds
-                                , LocalDateTime.now(), LocalDateTime.now());
+                        .findByItemIdInAndStartBeforeAndEndAfterOrderByStartDesc(itemIds,
+                                LocalDateTime.now(), LocalDateTime.now());
                 break;
             case REJECTED:
                 result = bookingRepository
@@ -153,15 +140,13 @@ public class BookingServiceImpl implements BookingService {
                         .findByItemIdInAndStatusOrderByStartDesc(itemIds, BookingStatus.WAITING);
                 break;
             default:
-                result = bookingRepository.findByItemIdInOrderByStartDesc(itemIds);
+                result = bookingRepository
+                        .findByItemIdInOrderByStartDesc(itemIds);
         }
 
-        return result.stream()
-                .map(booking -> {
-                    return setItemAndBooker(booking);
-                })
-                .map(BookingMapper::toBookingDto)
-                .collect(Collectors.toList());
+        return result.stream().map(booking -> {
+            return setItemAndBooker(booking);
+        }).map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
 
@@ -189,7 +174,8 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new EntryUnknownException("No item with id = " + bookingDto.getItemId()));
 
         if (!item.getAvailable()) {
-            throw new ValidationException("Item " + bookingDto.getItemId() + " is not available");
+            throw new ValidationException("Item " +
+                    bookingDto.getItemId() + " is not available");
         }
 
         if (item.getOwnerId() == bookerId) {
@@ -198,14 +184,14 @@ public class BookingServiceImpl implements BookingService {
 
 
         if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new ValidationException("End date " + bookingDto.getEnd()
-                    + " cannot be before start date " + bookingDto.getStart());
+            throw new ValidationException("End date " +
+                    bookingDto.getEnd() + " cannot be before start date " + bookingDto.getStart());
         }
 
 
         if (bookingDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Start date " + bookingDto.getStart()
-                    + " is in a past, now is " + LocalDateTime.now());
+            throw new ValidationException("Start date " +
+                    bookingDto.getStart() + " is in a past, now is " + LocalDateTime.now());
         }
 
     }
@@ -241,8 +227,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private Booking getBooking(long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntryUnknownException("No booking with id = " + bookingId));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new EntryUnknownException("No booking with id = " + bookingId));
 
         return setItemAndBooker(booking);
     }

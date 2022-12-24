@@ -38,8 +38,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findById(@RequestHeader("X-Sharer-User-Id") long userId,
-                            @PathVariable long itemId) {
+    public ItemDto findById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         return itemService.findById(userId, itemId);
     }
 
@@ -49,9 +48,9 @@ public class ItemController {
     }
 
     @PostMapping("{itemId}/comment")
-    public CommentDto createComment(@Valid @RequestBody CommentDto commentDto
-            , @PathVariable long itemId
-            , @RequestHeader("X-Sharer-User-Id") long userId) {
+    public CommentDto createComment(@Valid @RequestBody CommentDto commentDto,
+                                    @PathVariable long itemId,
+                                    @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.createComment(commentDto, itemId, userId);
     }
 
