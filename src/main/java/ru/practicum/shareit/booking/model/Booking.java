@@ -17,7 +17,11 @@ import java.time.LocalDateTime;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
+
+    private Long itemId;
+
+    private Long bookerId;
 
     @Column(name = "start_date")
     private LocalDateTime start;
@@ -25,15 +29,12 @@ public class Booking {
     @Column(name = "end_date")
     private LocalDateTime end;
 
-    private Long itemId;
-
-    private Long bookerId;
-
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
     @Transient
     private Item item;
+
     @Transient
     private User booker;
 
