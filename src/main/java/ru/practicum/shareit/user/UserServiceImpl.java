@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto userDto) {
-        validateUser(userDto);
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
@@ -41,7 +40,6 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userDto.getEmail() != null) {
-            validateUser(userDto);
             user.setEmail(userDto.getEmail());
         }
         return UserMapper.toUserDto(userRepository.save(user));
@@ -67,14 +65,4 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntryUnknownException("No user with id = " + userId)));
     }
 
-    private void validateUser(UserDto userDto) {
-
-        List<User> duplicateEmailUsers = userRepository.findAll().stream()
-                .filter(user -> user.getEmail().equals(userDto.getEmail()))
-                .collect(Collectors.toList());
-        if (!duplicateEmailUsers.isEmpty()) {
-            log.info("User: Validation failed: user with this email already exists");
-            throw new DuplicateEmailException("Two users cannot have the same email");
-        }
-    }
 }
