@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,13 +18,16 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @NotBlank(message = "Text is mandatory")
-    String text;
-    Long itemId;
-    Long authorId;
-    LocalDateTime created;
+    private String text;
+
+    private Long itemId;
+
+    private Long authorId;
+
+    private LocalDateTime created;
+
     @Transient
-    String author;
+    private User author;
 }

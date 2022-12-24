@@ -1,6 +1,10 @@
 package ru.practicum.shareit.item.dto;
 
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.ArrayList;
 
 public class ItemMapper {
 
@@ -10,7 +14,10 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getRequest() != null ? item.getRequest().getId() : null
+                item.getRequest() != null ? item.getRequest().getId() : null,
+                item.getLastBooking(),
+                item.getNextBooking(),
+                new ArrayList<>()
         );
     }
 

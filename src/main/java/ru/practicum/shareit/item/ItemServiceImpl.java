@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
 import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
 import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
@@ -14,6 +18,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserRepository;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -83,15 +88,28 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto findById(long itemId) {
-        return ItemMapper.toItemDto(itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntryUnknownException("No item with id = " + itemId)));
+    public ItemDto findById(long userId, long itemId) {
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntryUnknownException("No item with id = " + itemId));
+
+        if (item.getOwnerId() == userId) {
+            item = setBookingInfo(item);
+        }
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        itemDto.setComments(getCommentDtoByItemId(itemDto.getId()));
+        return itemDto;
     }
 
     @Override
     public List<ItemDto> findAllItemsByOwner(long userId) {
         return itemRepository.findAllByOwnerIdOrderById(userId).stream()
+                .map(item -> { return setBookingInfo(item);})
                 .map(ItemMapper::toItemDto)
+                .map(itemDto -> {
+                    itemDto.setComments(getCommentDtoByItemId(itemDto.getId()));
+                    return itemDto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -106,18 +124,78 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Comment createComment(Comment comment, long itemId, long userId) {
+    public CommentDto createComment(CommentDto commentDto, long itemId, long userId) {
 
         if (bookingRepository.findByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDateTime.now())
                 .isEmpty()) {
             throw new ValidationException("No completed bookings of item " + itemId + " by user" + userId);
         }
 
-        comment.setAuthorId(userId);
+        Comment comment = new Comment();
+        comment.setText(commentDto.getText());
         comment.setItemId(itemId);
+        comment.setAuthorId(userId);
         comment.setCreated(LocalDateTime.now());
-        commentRepository.save(comment);
+        return CommentMapper.toCommentDto(commentRepository.save(setCommentAuthor(comment)));
+    }
+
+    private Comment setCommentAuthor(Comment comment) {
+        if (comment == null) {
+            return null;
+        }
+
+        User author = userRepository.findById(comment.getAuthorId())
+                .orElseThrow(() -> new EntryUnknownException("No user with id = " + comment.getAuthorId()));
+
+        comment.setAuthor(author);
+
         return comment;
+    }
+
+
+    private List<CommentDto> getCommentDtoByItemId(long itemId){
+        return commentRepository.findByItemIdOrderByCreatedDesc(itemId)
+                .stream()
+                .map(comment -> {return setCommentAuthor(comment);})
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+    }
+
+
+    private Item setBookingInfo(Item item) {
+
+        if (item == null) {
+            return null;
+        }
+
+        Booking lastBooking = bookingRepository
+                .findFirstByItemIdAndStartBeforeOrderByStartDesc(item.getId(), LocalDateTime.now())
+                .orElse(null);
+
+        Booking nextBooking = bookingRepository
+                .findFirstByItemIdAndStartAfterOrderByStartAsc(item.getId(), LocalDateTime.now())
+                .orElse(null);
+
+        item.setLastBooking(BookingMapper.toBookingDtoForItem(setItemAndBooker(lastBooking)));
+        item.setNextBooking(BookingMapper.toBookingDtoForItem(setItemAndBooker(nextBooking)));
+        return item;
+    }
+
+    private Booking setItemAndBooker(Booking booking) {
+
+        if (booking == null) {
+            return null;
+        }
+
+        Item item = itemRepository.findById(booking.getItemId())
+                .orElseThrow(() -> new EntryUnknownException("No item with id = " + booking.getItemId()));
+        booking.setItem(item);
+
+        User booker = userRepository.findById(booking.getBookerId())
+                .orElseThrow(() -> new EntryUnknownException("No user with id = " + booking.getBookerId()));
+        booking.setBooker(booker);
+
+        return booking;
     }
 
 }

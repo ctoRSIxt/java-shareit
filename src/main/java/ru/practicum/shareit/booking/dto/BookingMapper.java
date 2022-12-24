@@ -16,4 +16,15 @@ public class BookingMapper {
                 UserMapper.toUserDto(booking.getBooker())
         );
     }
+
+    public static BookingDtoForItem toBookingDtoForItem(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
+        return new BookingDtoForItem(
+                booking.getId(),
+                booking.getBookerId()
+        );
+    }
 }

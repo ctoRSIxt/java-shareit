@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -38,6 +40,13 @@ public class Item {
 
     @Transient
     private ItemRequest request;
+
+    @Transient
+    private BookingDtoForItem lastBooking;
+
+    @Transient
+    private BookingDtoForItem nextBooking;
+
 
 
     public Item(long id, String name, String description, Boolean available, User owner, ItemRequest request) {
