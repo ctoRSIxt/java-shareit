@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class ItemMapper {
                 itemDto.getId() != null ? itemDto.getId().longValue() : 0,
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getAvailable() != null ? itemDto.getAvailable().booleanValue() : false,
+                itemDto.getAvailable() != null && itemDto.getAvailable().booleanValue(),
                 null,
                 null
         );

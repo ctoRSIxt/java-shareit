@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
 import ru.practicum.shareit.exceptions.StateValidationException;
-import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
@@ -18,7 +17,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
-
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -113,13 +111,15 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return result.stream()
-                .map(booking -> {return setItemAndBooker(booking);})
+                .map(booking -> {
+                    return setItemAndBooker(booking);
+                })
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingDto>  findAllByOwnerId(long ownerId, String stateString) {
+    public List<BookingDto> findAllByOwnerId(long ownerId, String stateString) {
         validateUserId(ownerId);
         State state = validateState(stateString);
         List<Booking> result;
@@ -157,7 +157,9 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return result.stream()
-                .map(booking -> {return setItemAndBooker(booking);})
+                .map(booking -> {
+                    return setItemAndBooker(booking);
+                })
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }

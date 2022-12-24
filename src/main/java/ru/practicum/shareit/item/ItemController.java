@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Comment;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -51,8 +50,8 @@ public class ItemController {
 
     @PostMapping("{itemId}/comment")
     public CommentDto createComment(@Valid @RequestBody CommentDto commentDto
-                                , @PathVariable long itemId
-                                , @RequestHeader("X-Sharer-User-Id") long userId) {
+            , @PathVariable long itemId
+            , @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.createComment(commentDto, itemId, userId);
     }
 

@@ -16,9 +16,8 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserRepository;
-
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -104,7 +103,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findAllItemsByOwner(long userId) {
         return itemRepository.findAllByOwnerIdOrderById(userId).stream()
-                .map(item -> { return setBookingInfo(item);})
+                .map(item -> {
+                    return setBookingInfo(item);
+                })
                 .map(ItemMapper::toItemDto)
                 .map(itemDto -> {
                     itemDto.setComments(getCommentDtoByItemId(itemDto.getId()));
@@ -153,10 +154,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-    private List<CommentDto> getCommentDtoByItemId(long itemId){
+    private List<CommentDto> getCommentDtoByItemId(long itemId) {
         return commentRepository.findByItemIdOrderByCreatedDesc(itemId)
                 .stream()
-                .map(comment -> {return setCommentAuthor(comment);})
+                .map(comment -> {
+                    return setCommentAuthor(comment);
+                })
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }

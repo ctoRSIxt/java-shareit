@@ -15,34 +15,34 @@ public class BookingController {
 
     @PostMapping
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") long userId
-                         ,@RequestBody BookingDto bookingDto) {
+            , @RequestBody BookingDto bookingDto) {
         return bookingService.create(userId, bookingDto);
     }
 
 
     @PatchMapping("/{bookingId}")
     public BookingDto patchToApprove(@RequestHeader("X-Sharer-User-Id") long userId
-                                 ,@PathVariable long bookingId
-                                 ,@RequestParam boolean approved) {
+            , @PathVariable long bookingId
+            , @RequestParam boolean approved) {
 
         return bookingService.approveBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto findById(@RequestHeader("X-Sharer-User-Id") long userId
-                           ,@PathVariable long bookingId) {
+            , @PathVariable long bookingId) {
         return bookingService.findById(userId, bookingId);
     }
 
     @GetMapping
     public List<BookingDto> findAllByUserId(@RequestHeader("X-Sharer-User-Id") long userId
-                                        ,@RequestParam(defaultValue = "ALL") String state) {
+            , @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.findAllByBookerId(userId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId
-                                         ,@RequestParam(defaultValue = "ALL") String state) {
+            , @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.findAllByOwnerId(ownerId, state);
     }
 
