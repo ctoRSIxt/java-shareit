@@ -44,7 +44,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = getBooking(bookingId);
 
-        if (!booking.getItem().getOwnerId().equals(userId)) {
+        if (!(booking.getItem().getOwner().getId() == userId)) {
             throw new EntryUnknownException("The user is not the owner of the item");
         }
 
@@ -65,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto findById(long userId, long bookingId) {
         Booking booking = getBooking(bookingId);
 
-        if (!(booking.getItem().getOwnerId().equals(userId) || booking.getBookerId().equals(userId))) {
+        if (!(booking.getItem().getOwner().getId() == userId || booking.getBookerId().equals(userId))) {
             throw new EntryUnknownException("The user is not the owner or booker of the item");
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
@@ -177,7 +177,7 @@ public class BookingServiceImpl implements BookingService {
                     bookingDto.getItemId() + " is not available");
         }
 
-        if (item.getOwnerId() == bookerId) {
+        if (item.getOwner().getId() == bookerId) {
             throw new EntryUnknownException("Owner cannot book his/her own items");
         }
 

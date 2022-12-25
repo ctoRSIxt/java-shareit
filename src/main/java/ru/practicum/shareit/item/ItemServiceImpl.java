@@ -43,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new EntryUnknownException("No user with id = " + userId));
 
-        item.setOwnerId(owner.getId());
+//        item.setOwnerId(owner.getId());
         item.setOwner(owner);
 
         if (itemDto.getRequestId() != null) {
@@ -61,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntryUnknownException("No item with id = " + itemId));
 
-        if (item.getOwnerId() != userId) {
+        if (item.getOwner().getId() != userId) {
             throw new UserNotItemOwnerException("The user is not the owner of the item");
         }
 
@@ -92,10 +92,12 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntryUnknownException("No item with id = " + itemId));
 
-        if (item.getOwnerId() == userId) {
-            item = setBookingInfo(item);
-        }
+
         ItemDto itemDto = ItemMapper.toItemDto(item);
+        if (item.getOwner().getId() == userId) {
+            itemDto = setBookingInfo(itemDto);
+        }
+
         itemDto.setComments(getCommentDtoByItemId(itemDto.getId()));
         return itemDto;
     }
@@ -103,10 +105,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findAllItemsByOwner(long userId) {
         return itemRepository.findAllByOwnerIdOrderById(userId).stream()
-                .map(item -> {
-                    return setBookingInfo(item);
-                })
                 .map(ItemMapper::toItemDto)
+                .map(itemDto -> {
+                    return setBookingInfo(itemDto);
+                })
                 .map(itemDto -> {
                     itemDto.setComments(getCommentDtoByItemId(itemDto.getId()));
                     return itemDto;
@@ -132,56 +134,44 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("No completed bookings of item " + itemId + " by user" + userId);
         }
 
+        User author = userRepository.findById(userId)
+                .orElseThrow(() -> new EntryUnknownException("No user with id = " + userId));
+
         Comment comment = new Comment();
         comment.setText(commentDto.getText());
         comment.setItemId(itemId);
-        comment.setAuthorId(userId);
-        comment.setCreated(LocalDateTime.now());
-        return CommentMapper.toCommentDto(commentRepository.save(setCommentAuthor(comment)));
-    }
-
-    private Comment setCommentAuthor(Comment comment) {
-        if (comment == null) {
-            return null;
-        }
-
-        User author = userRepository.findById(comment.getAuthorId())
-                .orElseThrow(() -> new EntryUnknownException("No user with id = " + comment.getAuthorId()));
-
         comment.setAuthor(author);
-
-        return comment;
+        comment.setCreated(LocalDateTime.now());
+        return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
+
 
 
     private List<CommentDto> getCommentDtoByItemId(long itemId) {
         return commentRepository.findByItemIdOrderByCreatedDesc(itemId)
                 .stream()
-                .map(comment -> {
-                    return setCommentAuthor(comment);
-                })
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 
 
-    private Item setBookingInfo(Item item) {
+    private ItemDto setBookingInfo(ItemDto itemDto) {
 
-        if (item == null) {
+        if (itemDto == null) {
             return null;
         }
 
         Booking lastBooking = bookingRepository
-                .findFirstByItemIdAndStartBeforeOrderByStartDesc(item.getId(), LocalDateTime.now())
+                .findFirstByItemIdAndStartBeforeOrderByStartDesc(itemDto.getId(), LocalDateTime.now())
                 .orElse(null);
 
         Booking nextBooking = bookingRepository
-                .findFirstByItemIdAndStartAfterOrderByStartAsc(item.getId(), LocalDateTime.now())
+                .findFirstByItemIdAndStartAfterOrderByStartAsc(itemDto.getId(), LocalDateTime.now())
                 .orElse(null);
 
-        item.setLastBooking(BookingMapper.toBookingDtoForItem(setItemAndBooker(lastBooking)));
-        item.setNextBooking(BookingMapper.toBookingDtoForItem(setItemAndBooker(nextBooking)));
-        return item;
+        itemDto.setLastBooking(BookingMapper.toBookingDtoForItem(setItemAndBooker(lastBooking)));
+        itemDto.setNextBooking(BookingMapper.toBookingDtoForItem(setItemAndBooker(nextBooking)));
+        return itemDto;
     }
 
     private Booking setItemAndBooker(Booking booking) {

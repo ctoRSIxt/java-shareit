@@ -13,8 +13,8 @@ public class ItemMapper {
                 item.getDescription(),
                 item.getAvailable(),
                 item.getRequest() != null ? item.getRequest().getId() : null,
-                item.getLastBooking(),
-                item.getNextBooking(),
+                null,
+                null,
                 new ArrayList<>()
         );
     }

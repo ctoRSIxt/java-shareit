@@ -23,10 +23,9 @@ public class Comment {
 
     private Long itemId;
 
-    private Long authorId;
+    @ManyToOne
+    private User author;
 
     private LocalDateTime created;
 
-    @Transient
-    private User author;
 }

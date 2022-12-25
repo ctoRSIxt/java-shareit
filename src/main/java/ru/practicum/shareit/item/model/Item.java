@@ -30,29 +30,9 @@ public class Item {
     @NotNull(message = "Available should not be empty")
     private Boolean available;
 
-    private Long ownerId;
-
-    private Long requestId;
-
-    @Transient
+    @ManyToOne(optional = false)
     private User owner;
 
-    @Transient
+    @ManyToOne
     private ItemRequest request;
-
-    @Transient
-    private BookingDtoForItem lastBooking;
-
-    @Transient
-    private BookingDtoForItem nextBooking;
-
-
-    public Item(long id, String name, String description, Boolean available, User owner, ItemRequest request) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.owner = owner;
-        this.request = request;
-    }
 }
