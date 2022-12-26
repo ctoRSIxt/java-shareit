@@ -19,9 +19,11 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private Long itemId;
+    @ManyToOne(optional = false)
+    private Item item;
 
-    private Long bookerId;
+    @ManyToOne(optional = false)
+    private User booker;
 
     @Column(name = "start_date")
     private LocalDateTime start;
@@ -32,10 +34,5 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
-    @Transient
-    private Item item;
-
-    @Transient
-    private User booker;
 
 }

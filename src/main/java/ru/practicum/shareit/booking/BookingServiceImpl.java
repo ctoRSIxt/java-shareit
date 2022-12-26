@@ -4,7 +4,6 @@ package ru.practicum.shareit.booking;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.State;
@@ -35,14 +34,32 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto create(long userId, BookingDto bookingDto) {
 
         validateBookingDto(userId, bookingDto);
-        return BookingMapper.toBookingDto(bookingRepository.save(mapToBooking(userId, bookingDto)));
+
+        Booking booking = new Booking();
+
+        Item item = itemRepository.findById(bookingDto.getItemId())
+                .orElseThrow(() -> new EntryUnknownException("No item with id = " + bookingDto.getItemId()));
+        booking.setItem(item);
+
+        User booker = userRepository.findById(userId)
+                .orElseThrow(() -> new EntryUnknownException("No user with id = " + userId));
+        booking.setBooker(booker);
+
+        booking.setItem(item);
+        booking.setBooker(booker);
+        booking.setStart(bookingDto.getStart());
+        booking.setEnd(bookingDto.getEnd());
+        booking.setStatus(BookingStatus.WAITING);
+
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
 
     }
 
     @Override
     public BookingDto approveBooking(long userId, long bookingId, boolean approved) {
 
-        Booking booking = getBooking(bookingId);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new EntryUnknownException("No booking with id = " + bookingId));
 
         if (!(booking.getItem().getOwner().getId() == userId)) {
             throw new EntryUnknownException("The user is not the owner of the item");
@@ -63,9 +80,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto findById(long userId, long bookingId) {
-        Booking booking = getBooking(bookingId);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new EntryUnknownException("No booking with id = " + bookingId));
 
-        if (!(booking.getItem().getOwner().getId() == userId || booking.getBookerId().equals(userId))) {
+        if (!(booking.getItem().getOwner().getId() == userId || booking.getBooker().getId() == userId)) {
             throw new EntryUnknownException("The user is not the owner or booker of the item");
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
@@ -98,9 +116,9 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.findByBookerIdOrderByStartDesc(bookerId);
         }
 
-        return result.stream().map(booking -> {
-            return setItemAndBooker(booking);
-        }).map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return result.stream()
+                .map(BookingMapper::toBookingDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -143,9 +161,9 @@ public class BookingServiceImpl implements BookingService {
                         .findByItemIdInOrderByStartDesc(itemIds);
         }
 
-        return result.stream().map(booking -> {
-            return setItemAndBooker(booking);
-        }).map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return result.stream()
+                .map(BookingMapper::toBookingDto)
+                .collect(Collectors.toList());
     }
 
 
@@ -193,42 +211,6 @@ public class BookingServiceImpl implements BookingService {
                     bookingDto.getStart() + " is in a past, now is " + LocalDateTime.now());
         }
 
-    }
-
-    private Booking setItemAndBooker(Booking booking) {
-
-        if (booking == null) {
-            return null;
-        }
-
-        Item item = itemRepository.findById(booking.getItemId())
-                .orElseThrow(() -> new EntryUnknownException("No item with id = " + booking.getItemId()));
-        booking.setItem(item);
-
-        User booker = userRepository.findById(booking.getBookerId())
-                .orElseThrow(() -> new EntryUnknownException("No user with id = " + booking.getBookerId()));
-        booking.setBooker(booker);
-
-        return booking;
-    }
-
-    private Booking mapToBooking(long bookerId, BookingDto bookingDto) {
-
-        Booking booking = new Booking();
-
-        booking.setItemId(bookingDto.getItemId());
-        booking.setBookerId(bookerId);
-        booking.setStart(bookingDto.getStart());
-        booking.setEnd(bookingDto.getEnd());
-        booking.setStatus(BookingStatus.WAITING);
-
-        return setItemAndBooker(booking);
-    }
-
-    private Booking getBooking(long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new EntryUnknownException("No booking with id = " + bookingId));
-
-        return setItemAndBooker(booking);
     }
 
 }
