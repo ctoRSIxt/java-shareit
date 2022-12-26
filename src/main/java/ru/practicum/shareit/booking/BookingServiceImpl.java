@@ -8,7 +8,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
-import ru.practicum.shareit.exceptions.StateValidationException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -170,7 +169,7 @@ public class BookingServiceImpl implements BookingService {
     private void validateUserId(long userId) {
         userService.findById(userId);
     }
-    
+
 
     private void validateBookingDto(long bookerId, BookingDto bookingDto) {
 

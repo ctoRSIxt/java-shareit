@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
@@ -146,10 +145,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-    private List<CommentDto> getCommentDtoByItemId(long itemId) {
+    private List<ItemDto.Comment> getCommentDtoByItemId(long itemId) {
         return commentRepository.findByItemIdOrderByCreatedDesc(itemId)
                 .stream()
-                .map(CommentMapper::toCommentDto)
+                .map(ItemDto::toInnerComment)
                 .collect(Collectors.toList());
     }
 
@@ -168,26 +167,10 @@ public class ItemServiceImpl implements ItemService {
                 .findFirstByItemIdAndStartAfterOrderByStartAsc(itemDto.getId(), LocalDateTime.now())
                 .orElse(null);
 
-        itemDto.setLastBooking(BookingMapper.toBookingDtoForItem(lastBooking));
-        itemDto.setNextBooking(BookingMapper.toBookingDtoForItem(nextBooking));
+        itemDto.setLastBooking(ItemDto.toBookingDtoForItem(lastBooking));
+        itemDto.setNextBooking(ItemDto.toBookingDtoForItem(nextBooking));
         return itemDto;
     }
 
-//    private Booking setItemAndBooker(Booking booking) {
-//
-//        if (booking == null) {
-//            return null;
-//        }
-//
-//        Item item = itemRepository.findById(booking.getItemId())
-//                .orElseThrow(() -> new EntryUnknownException("No item with id = " + booking.getItemId()));
-//        booking.setItem(item);
-//
-//        User booker = userRepository.findById(booking.getBookerId())
-//                .orElseThrow(() -> new EntryUnknownException("No user with id = " + booking.getBookerId()));
-//        booking.setBooker(booker);
-//
-//        return booking;
-//    }
 
 }
