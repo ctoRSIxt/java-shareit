@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByBookerId(long bookerId, String stateString) {
 
         validateUserId(bookerId);
-        State state = validateState(stateString);
+        State state = State.validateState(stateString);
         List<Booking> result;
 
         switch (state) {
@@ -124,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> findAllByOwnerId(long ownerId, String stateString) {
         validateUserId(ownerId);
-        State state = validateState(stateString);
+        State state = State.validateState(stateString);
         List<Booking> result;
 
         List<Long> itemIds = itemRepository
@@ -168,20 +168,9 @@ public class BookingServiceImpl implements BookingService {
 
 
     private void validateUserId(long userId) {
-        if (userService.findById(userId) == null) {
-            throw new ValidationException("User with id" + userId + " doesn't exist");
-        }
+        userService.findById(userId);
     }
-
-    private State validateState(String stateString) {
-        State state = null;
-        try {
-            state = State.valueOf(stateString);
-        } catch (IllegalArgumentException e) {
-            throw new StateValidationException("Unknown state: " + stateString);
-        }
-        return state;
-    }
+    
 
     private void validateBookingDto(long bookerId, BookingDto bookingDto) {
 
