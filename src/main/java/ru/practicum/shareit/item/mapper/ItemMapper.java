@@ -1,6 +1,9 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.item.mapper;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.ArrayList;
 
 public class ItemMapper {
 
@@ -9,8 +12,11 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable(),
-                item.getRequest() != null ? item.getRequest().getId() : null
+                item.getAvailable(),
+                item.getRequest() != null ? item.getRequest().getId() : null,
+                null,
+                null,
+                new ArrayList<>()
         );
     }
 
@@ -19,7 +25,7 @@ public class ItemMapper {
                 itemDto.getId() != null ? itemDto.getId().longValue() : 0,
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getAvailable() != null ? itemDto.getAvailable().booleanValue() : false,
+                itemDto.getAvailable() != null && itemDto.getAvailable().booleanValue(),
                 null,
                 null
         );
