@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +18,7 @@ public class BookingDto {
     private LocalDateTime end;
     private BookingStatus status;
     private Item item;
-    private UserDto booker;
+    private User booker;
 
 
     @Data
@@ -37,6 +36,20 @@ public class BookingDto {
                 item0.getName(),
                 item0.getDescription(),
                 item0.getAvailable());
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class User {
+        private long id;
+        private String name;
+        private String email;
+    }
+
+    public static User toInnerUser(ru.practicum.shareit.user.model.User user0) {
+        return new User(user0.getId(),
+                user0.getName(),
+                user0.getEmail());
     }
 
 }

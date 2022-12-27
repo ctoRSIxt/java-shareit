@@ -42,7 +42,6 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new EntryUnknownException("No user with id = " + userId));
 
-//        item.setOwnerId(owner.getId());
         item.setOwner(owner);
 
         if (itemDto.getRequestId() != null) {
