@@ -58,10 +58,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> findAll(int from, int size, long userId) {
 
-        List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findAllByRequestorIdNot(
+        List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findAllByRequestorIdNot(userId,
                 PageRequest.of(from / size,
                         size,
-                        Sort.by(Sort.Direction.ASC, "created")), userId)
+                        Sort.by(Sort.Direction.DESC, "created")))
                 .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
@@ -96,5 +96,5 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         );
         return itemRequestDtos;
     }
-    
+
 }

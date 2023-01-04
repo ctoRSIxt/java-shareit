@@ -17,10 +17,10 @@ public interface ItemService {
     ItemDto findById(long userId, long itemId);
 
     // Find all items belonging to owner
-    List<ItemDto> findAllItemsByOwner(long userId);
+    List<ItemDto> findAllItemsByOwner(long userId, int from, int size);
 
     // Find an itemDto containing text in description or name
-    List<ItemDto> findByText(String text);
+    List<ItemDto> findByText(String text, int from, int size);
 
     CommentDto createComment(CommentDto comment, long itemId, long userId);
 }

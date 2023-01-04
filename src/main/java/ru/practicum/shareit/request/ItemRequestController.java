@@ -27,8 +27,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> findAll(@RequestHeader("X-Sharer-User-Id") long userId,
-                                        @RequestParam(value = "from") int from,
-                                        @RequestParam(value = "size") int size) {
+                                        @RequestParam(value = "from", defaultValue = "0") int from,
+                                        @RequestParam(value = "size", defaultValue = "10") int size) {
         return itemRequestService.findAll(from, size, userId);
     }
 
