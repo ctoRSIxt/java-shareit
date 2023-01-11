@@ -2,6 +2,10 @@ package ru.practicum.shareit.booking;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -89,30 +93,49 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByBookerId(long bookerId, String stateString) {
+    public List<BookingDto> findAllByBookerId(long bookerId, String stateString, int from, int size) {
 
         validateUserId(bookerId);
         State state = State.validateState(stateString);
-        List<Booking> result;
+        Page<Booking> result;
+
+        PageRequest pageRequest = PageRequest.of(from / size, size,
+                Sort.by(Sort.Direction.DESC, "start"));
+
+//        itemRepository.findAllByOwnerIdOrderById(ownerId,
+//                PageRequest.of(from / size, size,
+//                        Sort.by(Sort.Direction.ASC, "ownerId")))
 
         switch (state) {
             case PAST:
-                result = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now());
+//                result = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now());
+                result =  bookingRepository.findByBookerIdAndEndBefore(bookerId, LocalDateTime.now(), pageRequest);
                 break;
             case FUTURE:
-                result = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now());
+//                result = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now());
+                result = bookingRepository.findByBookerIdAndStartAfter(bookerId, LocalDateTime.now(),
+                        pageRequest);
                 break;
             case CURRENT:
-                result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, LocalDateTime.now(), LocalDateTime.now());
+//                result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(bookerId,
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest);
                 break;
             case REJECTED:
-                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED);
+//                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED);
+                result = bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageRequest);
                 break;
             case WAITING:
-                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING);
+//                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING);
+                result = bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageRequest);
                 break;
             default:
-                result = bookingRepository.findByBookerIdOrderByStartDesc(bookerId);
+
+                //        itemRepository.findAllByOwnerIdOrderById(ownerId,
+//                PageRequest.of(from / size, size,
+//                        Sort.by(Sort.Direction.ASC, "ownerId")))
+
+                result =  bookingRepository.findByBookerId(bookerId, pageRequest);
         }
 
         return result.stream()
@@ -121,13 +144,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByOwnerId(long ownerId, String stateString) {
+    public List<BookingDto> findAllByOwnerId(long ownerId, String stateString, int from, int size) {
         validateUserId(ownerId);
         State state = State.validateState(stateString);
         List<Booking> result;
 
-        List<Long> itemIds = itemRepository
-                .findAllByOwnerIdOrderById(ownerId)
+
+        List<Long> itemIds = itemRepository.findAllByOwnerIdOrderById(ownerId,
+                        PageRequest.of(from / size, size,
+                                Sort.by(Sort.Direction.ASC, "ownerId")))
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
