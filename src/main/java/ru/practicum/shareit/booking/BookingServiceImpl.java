@@ -4,7 +4,6 @@ package ru.practicum.shareit.booking;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -102,39 +101,25 @@ public class BookingServiceImpl implements BookingService {
         PageRequest pageRequest = PageRequest.of(from / size, size,
                 Sort.by(Sort.Direction.DESC, "start"));
 
-//        itemRepository.findAllByOwnerIdOrderById(ownerId,
-//                PageRequest.of(from / size, size,
-//                        Sort.by(Sort.Direction.ASC, "ownerId")))
-
         switch (state) {
             case PAST:
-//                result = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now());
                 result =  bookingRepository.findByBookerIdAndEndBefore(bookerId, LocalDateTime.now(), pageRequest);
                 break;
             case FUTURE:
-//                result = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now());
                 result = bookingRepository.findByBookerIdAndStartAfter(bookerId, LocalDateTime.now(),
                         pageRequest);
                 break;
             case CURRENT:
-//                result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, LocalDateTime.now(), LocalDateTime.now());
                 result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(bookerId,
                         LocalDateTime.now(), LocalDateTime.now(), pageRequest);
                 break;
             case REJECTED:
-//                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED);
                 result = bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageRequest);
                 break;
             case WAITING:
-//                result = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING);
                 result = bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageRequest);
                 break;
             default:
-
-                //        itemRepository.findAllByOwnerIdOrderById(ownerId,
-//                PageRequest.of(from / size, size,
-//                        Sort.by(Sort.Direction.ASC, "ownerId")))
-
                 result =  bookingRepository.findByBookerId(bookerId, pageRequest);
         }
 
