@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -114,10 +116,12 @@ public class BookingServiceImpl implements BookingService {
                         LocalDateTime.now(), LocalDateTime.now(), pageRequest);
                 break;
             case REJECTED:
-                result = bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageRequest);
+                result = bookingRepository.findByBookerIdAndStatus(bookerId,
+                        BookingStatus.REJECTED, pageRequest);
                 break;
             case WAITING:
-                result = bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageRequest);
+                result = bookingRepository.findByBookerIdAndStatus(bookerId,
+                        BookingStatus.WAITING, pageRequest);
                 break;
             default:
                 result =  bookingRepository.findByBookerId(bookerId, pageRequest);
@@ -135,12 +139,16 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> result;
 
 
-        List<Long> itemIds = itemRepository.findAllByOwnerIdOrderById(ownerId,
+        List<Long> itemIds = itemRepository.findAllByOwnerId(ownerId,
                         PageRequest.of(from / size, size,
-                                Sort.by(Sort.Direction.ASC, "ownerId")))
+                                Sort.by(Sort.Direction.ASC, "owner")))
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
+
+
+        log.info("itemIds =  {}", itemIds);
+        log.info("from/size, size =  {} , {}", from / size, size);
 
 
         switch (state) {

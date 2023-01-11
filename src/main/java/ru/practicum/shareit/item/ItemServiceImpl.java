@@ -104,9 +104,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAllItemsByOwner(long userId, int from, int size) {
-        return itemRepository.findAllByOwnerIdOrderById(userId,
+        return itemRepository.findAllByOwnerId(userId,
                         PageRequest.of(from / size, size,
-                                Sort.by(Sort.Direction.ASC, "ownerId")))
+                                Sort.by(Sort.Direction.ASC, "owner")))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .map(itemDto -> {
@@ -126,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemRepository.searchItemsByText(text,
                         PageRequest.of(from / size, size,
-                                Sort.by(Sort.Direction.ASC, "ownerId")))
+                                Sort.by(Sort.Direction.ASC, "owner")))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

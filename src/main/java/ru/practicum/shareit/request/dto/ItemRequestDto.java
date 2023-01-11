@@ -34,11 +34,15 @@ public class ItemRequestDto {
     public static class Item {
         private long id;
         private String name;
+        private String description;
+        private boolean available;
+        private long requestId;
         private long ownerId;
     }
 
     public static Item toInnerItem(ru.practicum.shareit.item.model.Item item) {
-        return new Item(item.getId(), item.getName(), item.getOwner().getId());
+        return new Item(item.getId(), item.getName(), item.getDescription(),
+                item.getAvailable(), item.getRequest().getId(), item.getOwner().getId());
     }
 
 }
