@@ -136,46 +136,47 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByOwnerId(long ownerId, String stateString, int from, int size) {
         validateUserId(ownerId);
         State state = State.validateState(stateString);
-        List<Booking> result;
+        Page<Booking> result;
 
 
-        List<Long> itemIds = itemRepository.findAllByOwnerId(ownerId,
-                        PageRequest.of(from / size, size,
-                                Sort.by(Sort.Direction.ASC, "owner")))
+        List<Long> itemIds = itemRepository.findAllByOwnerIdOrderByOwnerId(ownerId)
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
 
 
-        log.info("itemIds =  {}", itemIds);
-        log.info("from/size, size =  {} , {}", from / size, size);
+
+        PageRequest pageRequest = PageRequest.of(from / size, size,
+                Sort.by(Sort.Direction.DESC, "start"));
 
 
         switch (state) {
             case PAST:
                 result = bookingRepository
-                        .findByItemIdInAndEndBeforeOrderByStartDesc(itemIds, LocalDateTime.now());
+                        .findByItemIdInAndEndBefore(itemIds, LocalDateTime.now(), pageRequest);
                 break;
             case FUTURE:
                 result = bookingRepository
-                        .findByItemIdInAndStartAfterOrderByStartDesc(itemIds, LocalDateTime.now());
+                        .findByItemIdInAndStartAfter(itemIds, LocalDateTime.now(), pageRequest);
                 break;
             case CURRENT:
                 result = bookingRepository
-                        .findByItemIdInAndStartBeforeAndEndAfterOrderByStartDesc(itemIds,
-                                LocalDateTime.now(), LocalDateTime.now());
+                        .findByItemIdInAndStartBeforeAndEndAfter(itemIds,
+                                LocalDateTime.now(), LocalDateTime.now(), pageRequest);
                 break;
             case REJECTED:
                 result = bookingRepository
-                        .findByItemIdInAndStatusOrderByStartDesc(itemIds, BookingStatus.REJECTED);
+                        .findByItemIdInAndStatus(itemIds,
+                                BookingStatus.REJECTED, pageRequest);
                 break;
             case WAITING:
                 result = bookingRepository
-                        .findByItemIdInAndStatusOrderByStartDesc(itemIds, BookingStatus.WAITING);
+                        .findByItemIdInAndStatus(itemIds,
+                                BookingStatus.WAITING, pageRequest);
                 break;
             default:
                 result = bookingRepository
-                        .findByItemIdInOrderByStartDesc(itemIds);
+                        .findByItemIdInOrderByStartDesc(itemIds, pageRequest);
         }
 
         return result.stream()

@@ -26,17 +26,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findByBookerIdAndStatus(long id, BookingStatus status, Pageable pageable);
 
 
-    List<Booking> findByItemIdInOrderByStartDesc(List<Long> itemIds);
+    Page<Booking> findByItemIdInOrderByStartDesc(List<Long> itemIds, Pageable pageable);
 
-    List<Booking> findByItemIdInAndEndBeforeOrderByStartDesc(List<Long> itemIds, LocalDateTime end);
 
-    List<Booking> findByItemIdInAndStartAfterOrderByStartDesc(List<Long> itemIds, LocalDateTime start);
+    Page<Booking> findByItemIdInAndEndBefore(List<Long> itemIds,
+                                             LocalDateTime end, Pageable pageable);
 
-    List<Booking> findByItemIdInAndStartBeforeAndEndAfterOrderByStartDesc(List<Long> itemIds,
-                                                                          LocalDateTime start,
-                                                                          LocalDateTime end);
+    Page<Booking> findByItemIdInAndStartAfter(List<Long> itemIds,
+                                                              LocalDateTime start, Pageable pageable);
 
-    List<Booking> findByItemIdInAndStatusOrderByStartDesc(List<Long> itemIds, BookingStatus status);
+    Page<Booking> findByItemIdInAndStartBeforeAndEndAfter(List<Long> itemIds,
+                                                          LocalDateTime start,
+                                                          LocalDateTime end,
+                                                          Pageable pageable);
+
+    Page<Booking> findByItemIdInAndStatus(List<Long> itemIds,
+                                          BookingStatus status,
+                                          Pageable pageable);
 
 
     List<Booking> findByBookerIdAndItemIdAndEndBefore(long bookerId, long itemId, LocalDateTime moment);
