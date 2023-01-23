@@ -51,8 +51,7 @@ public class ItemServiceImpl implements ItemService {
                     .orElseThrow(() -> new EntryUnknownException("No itemRequest with id = " + itemDto.getRequestId())));
         }
 
-        itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
@@ -82,8 +81,7 @@ public class ItemServiceImpl implements ItemService {
                     .orElseThrow(() -> new EntryUnknownException("No itemRequest with id = " + itemDto.getRequestId())));
         }
 
-        itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
