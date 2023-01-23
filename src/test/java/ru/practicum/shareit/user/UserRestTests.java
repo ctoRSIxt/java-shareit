@@ -57,7 +57,7 @@ public class UserRestTests {
 
 
     @Test
-    void PostTest() throws Exception {
+    void postTest() throws Exception {
         Mockito.when(userService.create(Mockito.any()))
                         .thenReturn(userDto1);
 
@@ -73,7 +73,7 @@ public class UserRestTests {
     }
 
     @Test
-    void PostInvalidEmailTest() throws Exception {
+    void postInvalidEmailTest() throws Exception {
 
         userDto1.setEmail("invalid_email");
 
@@ -95,7 +95,7 @@ public class UserRestTests {
     }
 
     @Test
-    void PatchExistingTest() throws Exception {
+    void patchExistingTest() throws Exception {
 
         Mockito.when(userService.update(Mockito.anyLong() ,Mockito.any(UserDto.class)))
                 .thenAnswer(invocationOnMock -> {
@@ -119,17 +119,11 @@ public class UserRestTests {
                 .andExpect(jsonPath("$.name", is(userDto1.getName())))
                 .andExpect(jsonPath("$.email", is(userDto1.getEmail())));
 
-        mockMvc.perform(patch("/users/{userId}", 2)
-                        .content(objectMapper.writeValueAsString(userDto1))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
 
 
     @Test
-    void PatchUnknownTest() throws Exception {
+    void patchUnknownTest() throws Exception {
 
         Mockito.when(userService.update(Mockito.anyLong() ,Mockito.any(UserDto.class)))
                 .thenAnswer(invocationOnMock -> {
@@ -153,7 +147,7 @@ public class UserRestTests {
 
 
     @Test
-    void GetAllTest() throws Exception {
+    void getAllTest() throws Exception {
         Mockito.when(userService.findAll())
                 .thenReturn(List.of(userDto1, userDto2));
 
@@ -166,7 +160,7 @@ public class UserRestTests {
     }
 
     @Test
-    void GetByIdTest() throws Exception {
+    void getByIdTest() throws Exception {
 
         Mockito.when(userService.findById(1))
                 .thenReturn(userDto1);
@@ -180,7 +174,7 @@ public class UserRestTests {
     }
 
     @Test
-    void DeleteTest() throws Exception {
+    void deleteTest() throws Exception {
         Mockito.when(userService.deleteById(1))
                 .thenReturn(userDto1);
 
