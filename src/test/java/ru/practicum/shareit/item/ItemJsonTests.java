@@ -91,7 +91,7 @@ public class ItemJsonTests {
                 .isEqualTo(itemDto1.getComments().get(1).getAuthorName());
         assertThat(result).extractingJsonPathStringValue("$.comments[1].created")
                 .isEqualTo(itemDto1.getComments().get(1).getCreated().toString());
-        
+
     }
 
 }
