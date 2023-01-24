@@ -27,13 +27,10 @@ public class RequestIntegrationTests {
 
     @Autowired
     UserService userService;
-    
+
     private UserDto userDto1;
     private UserDto userDto2;
 
-    private User user1;
-    private ItemRequest itemRequest1;
-    private ItemRequest itemRequest2;
     private ItemRequestDto itemRequestDto1;
     private ItemRequestDto itemRequestDto2;
 
@@ -43,11 +40,11 @@ public class RequestIntegrationTests {
         userDto1 = new UserDto(1, "user1","email1@gmail.com");
         userDto2 = new UserDto(2, "user2","email2@gmail.com");
 
-        user1 = new User(1, "user1", "email1@gmail.com");
-        itemRequest1 = new ItemRequest(1, "description1",
+        User user1 = new User(1, "user1", "email1@gmail.com");
+        ItemRequest itemRequest1 = new ItemRequest(1, "description1",
                 user1, LocalDateTime.now());
 
-        itemRequest2 = new ItemRequest(2, "description2",
+        ItemRequest itemRequest2 = new ItemRequest(2, "description2",
                 user1, LocalDateTime.now());
 
         itemRequestDto1 = ItemRequestMapper.toItemRequestDto(itemRequest1);

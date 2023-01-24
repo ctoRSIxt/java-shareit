@@ -203,7 +203,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (item.getOwner().getId() == bookerId) {
-            throw new EntryUnknownException("Owner cannot book his/her own items");
+            throw new EntryUnknownException("Owner with id " + bookerId + " cannot book his/her own items");
         }
 
 
