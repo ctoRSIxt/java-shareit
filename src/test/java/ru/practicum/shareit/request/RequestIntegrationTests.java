@@ -39,8 +39,8 @@ public class RequestIntegrationTests {
     @BeforeEach
     void setUp() {
 
-        userDto1 = new UserDto(1, "user1","email1@gmail.com");
-        userDto2 = new UserDto(2, "user2","email2@gmail.com");
+        userDto1 = new UserDto(1, "user1", "email1@gmail.com");
+        userDto2 = new UserDto(2, "user2", "email2@gmail.com");
 
         User user1 = new User(1, "user1", "email1@gmail.com");
         ItemRequest itemRequest1 = new ItemRequest(1, "description1",

@@ -91,8 +91,8 @@ public class ItemTests {
         booking1 = new Booking(1L,
                 item1,
                 user1,
-                LocalDateTime.of(2022,12, 12, 12, 12),
-                LocalDateTime.of(2022,12, 15, 12, 12),
+                LocalDateTime.of(2022, 12, 12, 12, 12),
+                LocalDateTime.of(2022, 12, 15, 12, 12),
                 BookingStatus.APPROVED);
 
     }
@@ -101,7 +101,7 @@ public class ItemTests {
     @Test
     public void createTest() {
         Mockito.when(userRepository.findById(Mockito.anyLong()))
-                        .thenReturn(Optional.of(user1));
+                .thenReturn(Optional.of(user1));
 
         Mockito.when(requestRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(itemRequest1));
@@ -122,7 +122,9 @@ public class ItemTests {
 
         final EntryUnknownException exception = Assertions.assertThrows(
                 EntryUnknownException.class,
-                () -> {itemService.create(2, itemDto1);}
+                () -> {
+                    itemService.create(2, itemDto1);
+                }
         );
 
         Assertions.assertEquals("No user with id = 2", exception.getMessage());
@@ -164,10 +166,10 @@ public class ItemTests {
     public void findByOwnerTest() {
         Mockito.when(itemRepository.findAllByOwnerId(Mockito.anyLong(),
                         Mockito.any(Pageable.class)))
-                        .thenReturn(new PageImpl<>(List.of(item1, item2)));
+                .thenReturn(new PageImpl<>(List.of(item1, item2)));
 
         Mockito.when(commentRepository.findByItemIdOrderByCreatedDesc(Mockito.anyLong()))
-                        .thenReturn(List.of(comment1));
+                .thenReturn(List.of(comment1));
 
         List<ItemDto> itemDtoList = itemService.findAllItemsByOwner(1L, 0, 2);
         Assertions.assertEquals(2, itemDtoList.size());
@@ -192,9 +194,9 @@ public class ItemTests {
     @Test
     public void createCommentTest() {
         Mockito.when(bookingRepository
-                                .findByBookerIdAndItemIdAndEndBefore(Mockito.anyLong(),
-                                        Mockito.anyLong(), Mockito.any(LocalDateTime.class)))
-                        .thenReturn(List.of(booking1));
+                        .findByBookerIdAndItemIdAndEndBefore(Mockito.anyLong(),
+                                Mockito.anyLong(), Mockito.any(LocalDateTime.class)))
+                .thenReturn(List.of(booking1));
 
 
         Mockito.when(userRepository.findById(Mockito.anyLong()))
@@ -202,7 +204,7 @@ public class ItemTests {
 
         Mockito.when(commentRepository.save(Mockito.any(Comment.class)))
                 .thenAnswer(invocationOnMock -> {
-                    Comment comment =  invocationOnMock.getArgument(0, Comment.class);
+                    Comment comment = invocationOnMock.getArgument(0, Comment.class);
                     comment.setId(1L);
                     return comment;
                 });

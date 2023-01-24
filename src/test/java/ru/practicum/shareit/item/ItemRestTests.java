@@ -74,7 +74,7 @@ public class ItemRestTests {
     @Test
     void postTest() throws Exception {
         Mockito.when(itemService.create(Mockito.anyLong(), Mockito.any(ItemDto.class)))
-                                .thenReturn(itemDto1);
+                .thenReturn(itemDto1);
 
 
         mockMvc.perform(post("/items")
@@ -132,7 +132,7 @@ public class ItemRestTests {
     }
 
     @Test
-    void  patchUnknownTest() throws Exception {
+    void patchUnknownTest() throws Exception {
 
         Mockito.when(itemService.update(Mockito.anyLong(),
                         Mockito.anyLong(),
@@ -158,11 +158,10 @@ public class ItemRestTests {
     }
 
 
-
     @Test
     void getAllTest() throws Exception {
         Mockito.when(itemService.findAllItemsByOwner(Mockito.anyLong(),
-                Mockito.anyInt(), Mockito.anyInt()))
+                        Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(List.of(itemDto1, itemDto2));
 
         mockMvc.perform(get("/items")
@@ -208,7 +207,6 @@ public class ItemRestTests {
                 .andExpect(jsonPath("$[0].name", is(itemDto1.getName())))
                 .andExpect(jsonPath("$[1].description", is(itemDto2.getDescription())));
     }
-
 
 
     @Test

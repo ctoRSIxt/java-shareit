@@ -71,7 +71,6 @@ public class BookingTests {
                 user1, LocalDateTime.now());
 
 
-
         itemDto1 = new ItemDto(1L, "item1",
                 "item1 description", true,
                 1L, null, null, new ArrayList<>());
@@ -84,8 +83,8 @@ public class BookingTests {
         booking1 = new Booking(1L,
                 item1,
                 user1,
-                LocalDateTime.of(2023,12, 12, 12, 12),
-                LocalDateTime.of(2023,12, 15, 12, 12),
+                LocalDateTime.of(2023, 12, 12, 12, 12),
+                LocalDateTime.of(2023, 12, 15, 12, 12),
                 BookingStatus.APPROVED);
 
         bookingDto1 = BookingMapper.toBookingDto(booking1);
@@ -93,8 +92,8 @@ public class BookingTests {
         booking2 = new Booking(2L,
                 item1,
                 user1,
-                LocalDateTime.of(2023,12, 12, 12, 12),
-                LocalDateTime.of(2023,12, 15, 12, 12),
+                LocalDateTime.of(2023, 12, 12, 12, 12),
+                LocalDateTime.of(2023, 12, 15, 12, 12),
                 BookingStatus.APPROVED);
 
         bookingDto2 = BookingMapper.toBookingDto(booking2);
@@ -145,8 +144,8 @@ public class BookingTests {
                 .thenReturn(UserMapper.toUserDto(user1));
 
         Mockito.when(bookingRepository.findByBookerIdAndStartAfter(Mockito.anyLong(),
-                Mockito.any(LocalDateTime.class),
-                Mockito.any(Pageable.class)))
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
 
 

@@ -55,12 +55,11 @@ public class BookingIntegrationTests {
     private ItemRequestDto itemRequestDto1;
 
 
-
     @BeforeEach
     void setUp() {
 
-        userDto1 = new UserDto(1, "user1","email1@gmail.com");
-        userDto2 = new UserDto(2, "user2","email2@gmail.com");
+        userDto1 = new UserDto(1, "user1", "email1@gmail.com");
+        userDto2 = new UserDto(2, "user2", "email2@gmail.com");
 
         User user1 = new User(1, "user1", "email1@gmail.com");
         User user2 = new User(2, "user2", "email2@gmail.com");
@@ -83,8 +82,8 @@ public class BookingIntegrationTests {
         Booking booking1 = new Booking(1L,
                 item1,
                 user1,
-                LocalDateTime.of(2023,12, 12, 12, 12),
-                LocalDateTime.of(2023,12, 15, 12, 12),
+                LocalDateTime.of(2023, 12, 12, 12, 12),
+                LocalDateTime.of(2023, 12, 15, 12, 12),
                 BookingStatus.APPROVED);
 
         bookingDto1 = BookingMapper.toBookingDto(booking1);
@@ -92,8 +91,8 @@ public class BookingIntegrationTests {
         Booking booking2 = new Booking(2L,
                 item1,
                 user1,
-                LocalDateTime.of(2023,12, 12, 12, 12),
-                LocalDateTime.of(2023,12, 15, 12, 12),
+                LocalDateTime.of(2023, 12, 12, 12, 12),
+                LocalDateTime.of(2023, 12, 15, 12, 12),
                 BookingStatus.APPROVED);
 
         bookingDto2 = BookingMapper.toBookingDto(booking2);
@@ -101,7 +100,7 @@ public class BookingIntegrationTests {
 
 
     @Test
-    void  findAllByBookerIdTest() {
+    void findAllByBookerIdTest() {
         bookingDto1.setId(-1L);
         bookingDto2.setId(-1L);
 

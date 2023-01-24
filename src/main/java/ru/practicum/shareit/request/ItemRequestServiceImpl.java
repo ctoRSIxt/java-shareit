@@ -59,9 +59,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> findAll(int from, int size, long userId) {
 
         List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findAllByRequestorIdNot(userId,
-                PageRequest.of(from / size,
-                        size,
-                        Sort.by(Sort.Direction.DESC, "created")))
+                        PageRequest.of(from / size,
+                                size,
+                                Sort.by(Sort.Direction.DESC, "created")))
                 .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
@@ -88,10 +88,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<Item> items = itemRepository.findAllByRequestIdIsIn(itemRequestIds);
 
         itemRequestDtos.forEach(request -> request.setItems(
-                items.stream()
-                        .filter(item -> item.getRequest().getId() == request.getId())
-                        .map(ItemRequestDto::toInnerItem)
-                        .collect(Collectors.toList())
+                        items.stream()
+                                .filter(item -> item.getRequest().getId() == request.getId())
+                                .map(ItemRequestDto::toInnerItem)
+                                .collect(Collectors.toList())
                 )
         );
         return itemRequestDtos;

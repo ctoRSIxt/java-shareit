@@ -25,8 +25,8 @@ public class UserIntegrationTests {
 
     @BeforeEach
     void setUp() {
-        userDto1 = new UserDto(1, "user1","email1@gmail.com");
-        userDto2 = new UserDto(2, "user2","email2@gmail.com");
+        userDto1 = new UserDto(1, "user1", "email1@gmail.com");
+        userDto2 = new UserDto(2, "user2", "email2@gmail.com");
     }
 
     @Test

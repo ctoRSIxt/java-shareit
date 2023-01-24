@@ -32,12 +32,11 @@ public class UserTests {
     private User user2;
 
 
-
     @BeforeEach
     void setUp() {
 
-        userDto1 = new UserDto(1, "user1","email1@gmail.com");
-        userDto2 = new UserDto(2, "user2","email2@gmail.com");
+        userDto1 = new UserDto(1, "user1", "email1@gmail.com");
+        userDto2 = new UserDto(2, "user2", "email2@gmail.com");
 
         user1 = new User(1, "user1", "email1@gmail.com");
         user2 = new User(2, "user2", "email2@gmail.com");
@@ -45,7 +44,7 @@ public class UserTests {
 
         Mockito.lenient().when(userRepository.save(Mockito.any(User.class)))
                 .thenAnswer(invocationOnMock -> {
-                    return  invocationOnMock.getArgument(0, User.class);
+                    return invocationOnMock.getArgument(0, User.class);
                 });
 
 
@@ -74,7 +73,9 @@ public class UserTests {
 
         final EntryUnknownException exception = Assertions.assertThrows(
                 EntryUnknownException.class,
-                () -> {userService.update(2, userDto2);}
+                () -> {
+                    userService.update(2, userDto2);
+                }
         );
 
         Assertions.assertEquals("No user with id = 2", exception.getMessage());
@@ -97,7 +98,9 @@ public class UserTests {
 
         final EntryUnknownException exception = Assertions.assertThrows(
                 EntryUnknownException.class,
-                () -> {userService.deleteById(2);}
+                () -> {
+                    userService.deleteById(2);
+                }
         );
 
         Assertions.assertEquals("No user with id = 2", exception.getMessage());

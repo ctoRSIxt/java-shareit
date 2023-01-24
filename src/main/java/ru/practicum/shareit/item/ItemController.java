@@ -40,7 +40,7 @@ public class ItemController {
                                              @RequestParam(value = "from", defaultValue = "0")
                                              @Min(value = 0) int from,
                                              @RequestParam(value = "size", defaultValue = "10")
-                                                 @Min(value = 1) int size) {
+                                             @Min(value = 1) int size) {
         return itemService.findAllItemsByOwner(userId, from, size);
     }
 
@@ -54,7 +54,7 @@ public class ItemController {
                                     @RequestParam(value = "from", defaultValue = "0")
                                     @Min(value = 0) int from,
                                     @RequestParam(value = "size", defaultValue = "10")
-                                        @Min(value = 1) int size) {
+                                    @Min(value = 1) int size) {
         return itemService.findByText(text, from, size);
     }
 

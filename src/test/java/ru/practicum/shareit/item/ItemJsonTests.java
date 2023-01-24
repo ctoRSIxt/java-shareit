@@ -74,7 +74,7 @@ public class ItemJsonTests {
                 .isEqualTo(itemDto1.getRequestId().intValue());
 
         assertThat(result).extractingJsonPathNumberValue("$.comments[0].id")
-                .isEqualTo((int)itemDto1.getComments().get(0).getId());
+                .isEqualTo((int) itemDto1.getComments().get(0).getId());
         assertThat(result).extractingJsonPathStringValue("$.comments[0].text")
                 .isEqualTo(itemDto1.getComments().get(0).getText());
         assertThat(result).extractingJsonPathStringValue("$.comments[0].authorName")
@@ -84,7 +84,7 @@ public class ItemJsonTests {
 
 
         assertThat(result).extractingJsonPathNumberValue("$.comments[1].id")
-                .isEqualTo((int)itemDto1.getComments().get(1).getId());
+                .isEqualTo((int) itemDto1.getComments().get(1).getId());
         assertThat(result).extractingJsonPathStringValue("$.comments[1].text")
                 .isEqualTo(itemDto1.getComments().get(1).getText());
         assertThat(result).extractingJsonPathStringValue("$.comments[1].authorName")

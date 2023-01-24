@@ -105,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case PAST:
-                result =  bookingRepository.findByBookerIdAndEndBefore(bookerId, LocalDateTime.now(), pageRequest);
+                result = bookingRepository.findByBookerIdAndEndBefore(bookerId, LocalDateTime.now(), pageRequest);
                 break;
             case FUTURE:
                 result = bookingRepository.findByBookerIdAndStartAfter(bookerId, LocalDateTime.now(),
@@ -124,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
                         BookingStatus.WAITING, pageRequest);
                 break;
             default:
-                result =  bookingRepository.findByBookerId(bookerId, pageRequest);
+                result = bookingRepository.findByBookerId(bookerId, pageRequest);
         }
 
         return result.stream()
@@ -143,7 +143,6 @@ public class BookingServiceImpl implements BookingService {
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
-
 
 
         PageRequest pageRequest = PageRequest.of(from / size, size,

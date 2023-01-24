@@ -50,8 +50,8 @@ public class UserRestTests {
                 .setControllerAdvice(ErrorHandler.class)
                 .build();
 
-        userDto1 = new UserDto(1, "user1","email1@gmail.com");
-        userDto2 = new UserDto(2, "user2","email2@gmail.com");
+        userDto1 = new UserDto(1, "user1", "email1@gmail.com");
+        userDto2 = new UserDto(2, "user2", "email2@gmail.com");
 
     }
 
@@ -59,13 +59,13 @@ public class UserRestTests {
     @Test
     void postTest() throws Exception {
         Mockito.when(userService.create(Mockito.any()))
-                        .thenReturn(userDto1);
+                .thenReturn(userDto1);
 
         mockMvc.perform(post("/users")
-                .content(objectMapper.writeValueAsString(userDto1))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(userDto1))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userDto1.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto1.getName())))
@@ -97,7 +97,7 @@ public class UserRestTests {
     @Test
     void patchExistingTest() throws Exception {
 
-        Mockito.when(userService.update(Mockito.anyLong() ,Mockito.any(UserDto.class)))
+        Mockito.when(userService.update(Mockito.anyLong(), Mockito.any(UserDto.class)))
                 .thenAnswer(invocationOnMock -> {
 
                     Long id = invocationOnMock.getArgument(0, Long.class);
@@ -105,7 +105,7 @@ public class UserRestTests {
                     if (id == 1) {
                         return invocationOnMock.getArgument(1, UserDto.class);
                     } else {
-                       throw new EntryUnknownException("No user with id = " + id);
+                        throw new EntryUnknownException("No user with id = " + id);
                     }
                 });
 
@@ -125,7 +125,7 @@ public class UserRestTests {
     @Test
     void patchUnknownTest() throws Exception {
 
-        Mockito.when(userService.update(Mockito.anyLong() ,Mockito.any(UserDto.class)))
+        Mockito.when(userService.update(Mockito.anyLong(), Mockito.any(UserDto.class)))
                 .thenAnswer(invocationOnMock -> {
 
                     Long id = invocationOnMock.getArgument(0, Long.class);
@@ -152,7 +152,7 @@ public class UserRestTests {
                 .thenReturn(List.of(userDto1, userDto2));
 
         mockMvc.perform(get("/users")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is(userDto1.getName())))

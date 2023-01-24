@@ -33,7 +33,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                              LocalDateTime end, Pageable pageable);
 
     Page<Booking> findByItemIdInAndStartAfter(List<Long> itemIds,
-                                                              LocalDateTime start, Pageable pageable);
+                                              LocalDateTime start, Pageable pageable);
 
     Page<Booking> findByItemIdInAndStartBeforeAndEndAfter(List<Long> itemIds,
                                                           LocalDateTime start,
