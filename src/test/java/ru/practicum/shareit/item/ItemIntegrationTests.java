@@ -79,5 +79,5 @@ public class ItemIntegrationTests {
         assertThat(dtoList.get(1), equalTo(itemDto2));
     }
 
-    
+
 }
