@@ -13,6 +13,9 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exceptions.EntryUnknownException;
+import ru.practicum.shareit.exceptions.StateValidationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -119,6 +122,75 @@ public class BookingTests {
         Assertions.assertEquals(bookingDto1, bookingService.create(user1.getId(), bookingDto1));
     }
 
+    @Test
+    public void createNoBookingTest() {
+
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        final EntryUnknownException exception = Assertions.assertThrows(
+                EntryUnknownException.class,
+                () -> {
+                    bookingService.create(user1.getId(), bookingDto1);
+                }
+        );
+    }
+
+    @Test
+    public void createNoAvailableTest() {
+
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        item1.setAvailable(false);
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(item1));
+
+        final ValidationException exception = Assertions.assertThrows(
+                ValidationException.class,
+                () -> {
+                    bookingService.create(user1.getId(), bookingDto1);
+                }
+        );
+    }
+
+    @Test
+    public void createWithUserOwnerTest() {
+
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        item1.setOwner(user1);
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(item1));
+
+        final EntryUnknownException exception = Assertions.assertThrows(
+                EntryUnknownException.class,
+                () -> {
+                    bookingService.create(user1.getId(), bookingDto1);
+                }
+        );
+    }
+
+
+    @Test
+    public void findByIdTest() {
+
+        booking1.setStatus(BookingStatus.WAITING);
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(booking1));
+
+        Mockito.when(bookingRepository.save(Mockito.any(Booking.class)))
+                .thenReturn(booking1);
+
+
+        BookingDto bookingDto = bookingService.findById(2L, 1L);
+        Assertions.assertEquals(BookingMapper.toBookingDto(booking1), bookingDto);
+    }
+
 
     @Test
     public void approveBookingTest() {
@@ -137,9 +209,61 @@ public class BookingTests {
         Assertions.assertEquals(BookingMapper.toBookingDto(booking1), bookingDto);
     }
 
+    @Test
+    public void rejectBookingTest() {
+
+        booking1.setStatus(BookingStatus.WAITING);
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(booking1));
+
+        Mockito.when(bookingRepository.save(Mockito.any(Booking.class)))
+                .thenReturn(booking1);
+
+
+        BookingDto bookingDto = bookingService.approveBooking(2L, 1L, false);
+
+        booking1.setStatus(BookingStatus.REJECTED);
+        Assertions.assertEquals(BookingMapper.toBookingDto(booking1), bookingDto);
+    }
+
 
     @Test
-    public void findByBookerTest() {
+    public void findByBookerWrongStateTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        final StateValidationException exception = Assertions.assertThrows(
+                StateValidationException.class,
+                () -> {
+                    bookingService.findAllByBookerId(2L,
+                            "WRONGSTATE", 0, 2);
+                }
+        );
+
+    }
+
+
+    @Test
+    public void findByBookerPastTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByBookerIdAndEndBefore(Mockito.anyLong(),
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+
+        List<BookingDto> bookingDtos = bookingService.findAllByBookerId(2L,
+                "PAST", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByBookerFutureTest() {
         Mockito.when(userService.findById(Mockito.anyLong()))
                 .thenReturn(UserMapper.toUserDto(user1));
 
@@ -157,9 +281,104 @@ public class BookingTests {
         Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
     }
 
+    @Test
+    public void findByBookerCurrentTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(Mockito.anyLong(),
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+
+        List<BookingDto> bookingDtos = bookingService.findAllByBookerId(2L,
+                "CURRENT", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
 
     @Test
-    public void findByOwnerTest() {
+    public void findByBookerRejectedTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByBookerIdAndStatus(Mockito.anyLong(),
+                        Mockito.any(BookingStatus.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+
+        List<BookingDto> bookingDtos = bookingService.findAllByBookerId(2L,
+                "REJECTED", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByBookerWaitingTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByBookerIdAndStatus(Mockito.anyLong(),
+                        Mockito.any(BookingStatus.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+
+        List<BookingDto> bookingDtos = bookingService.findAllByBookerId(2L,
+                "WAITING", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByBookerAllTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByBookerId(Mockito.anyLong(),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+
+        List<BookingDto> bookingDtos = bookingService.findAllByBookerId(2L,
+                "ALL", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+
+    @Test
+    public void findByOwnerPastTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByItemIdInAndEndBefore(Mockito.anyList(),
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+        List<BookingDto> bookingDtos = bookingService.findAllByOwnerId(2L,
+                "PAST", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+
+    @Test
+    public void findByOwnerFutureTest() {
         Mockito.when(userService.findById(Mockito.anyLong()))
                 .thenReturn(UserMapper.toUserDto(user1));
 
@@ -168,9 +387,80 @@ public class BookingTests {
                         Mockito.any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
 
-
         List<BookingDto> bookingDtos = bookingService.findAllByOwnerId(2L,
                 "FUTURE", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByOwnerCurrentTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByItemIdInAndStartBeforeAndEndAfter(Mockito.anyList(),
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(LocalDateTime.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+        List<BookingDto> bookingDtos = bookingService.findAllByOwnerId(2L,
+                "CURRENT", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByOwnerRejectedTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByItemIdInAndStatus(Mockito.anyList(),
+                        Mockito.any(BookingStatus.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+        List<BookingDto> bookingDtos = bookingService.findAllByOwnerId(2L,
+                "REJECTED", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByOwnerWaitingTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByItemIdInAndStatus(Mockito.anyList(),
+                        Mockito.any(BookingStatus.class),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+        List<BookingDto> bookingDtos = bookingService.findAllByOwnerId(2L,
+                "WAITING", 0, 2);
+
+        Assertions.assertEquals(2, bookingDtos.size());
+        Assertions.assertEquals(bookingDto1, bookingDtos.get(0));
+        Assertions.assertEquals(bookingDto2, bookingDtos.get(1));
+    }
+
+    @Test
+    public void findByOwnerAllTest() {
+        Mockito.when(userService.findById(Mockito.anyLong()))
+                .thenReturn(UserMapper.toUserDto(user1));
+
+        Mockito.when(bookingRepository.findByItemIdInOrderByStartDesc(Mockito.anyList(),
+                        Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking1, booking2)));
+
+        List<BookingDto> bookingDtos = bookingService.findAllByOwnerId(2L,
+                "ALL", 0, 2);
 
         Assertions.assertEquals(2, bookingDtos.size());
         Assertions.assertEquals(bookingDto1, bookingDtos.get(0));

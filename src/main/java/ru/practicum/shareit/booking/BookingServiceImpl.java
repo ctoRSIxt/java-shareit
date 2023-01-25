@@ -41,12 +41,10 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = new Booking();
 
-        Item item = itemRepository.findById(bookingDto.getItemId())
-                .orElseThrow(() -> new EntryUnknownException("No item with id = " + bookingDto.getItemId()));
+        Item item = itemRepository.findById(bookingDto.getItemId()).get();
         booking.setItem(item);
 
-        User booker = userRepository.findById(userId)
-                .orElseThrow(() -> new EntryUnknownException("No user with id = " + userId));
+        User booker = userRepository.findById(userId).get();
         booking.setBooker(booker);
 
         booking.setItem(item);

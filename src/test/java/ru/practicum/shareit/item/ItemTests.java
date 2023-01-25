@@ -14,6 +14,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
+import ru.practicum.shareit.exceptions.UserNotItemOwnerException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
@@ -75,6 +76,10 @@ public class ItemTests {
         item1 = ItemMapper.toItem(itemDto1);
         item1.setOwner(user1);
         item1.setRequest(itemRequest1);
+
+        itemDto2 = new ItemDto();
+        item2 = ItemMapper.toItem(itemDto2);
+        itemDto2 = ItemMapper.toItemDto(item2);
 
         itemDto2 = new ItemDto(2L, "item2",
                 "item2 description", true,
@@ -153,9 +158,31 @@ public class ItemTests {
     }
 
     @Test
+    public void updateByNotOwnerTest() {
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(item1));
+
+        itemDto1.setName("new name");
+        itemDto1.setDescription("new description");
+
+        final UserNotItemOwnerException exception = Assertions.assertThrows(
+                UserNotItemOwnerException.class,
+                () -> {
+                    itemService.update(3L, itemDto1.getId(), itemDto1);
+                }
+        );
+    }
+
+    @Test
     public void findByIdTest() {
         Mockito.when(itemRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(item1));
+
+        Mockito.when(bookingRepository.findFirstByItemIdAndStartBeforeOrderByStartDesc(
+                        Mockito.anyLong(), Mockito.any(LocalDateTime.class)))
+                .thenReturn(Optional.of(booking1));
+
+        itemDto1.setLastBooking(ItemDto.toBookingDtoForItem(booking1));
 
         Assertions.assertEquals(itemDto1,
                 itemService.findById(user1.getId(), itemDto1.getId()));
@@ -184,11 +211,15 @@ public class ItemTests {
                         Mockito.any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(item1, item2)));
 
-        itemService.findByText("find text", 0, 2);
-
         List<ItemDto> itemDtoList = itemService.findByText("find text", 0, 2);
         Assertions.assertEquals(2, itemDtoList.size());
         Assertions.assertEquals(itemDto1, itemDtoList.get(0));
+    }
+
+    @Test
+    public void findByTextEmptyTest() {
+        List<ItemDto> itemDtoList = itemService.findByText("", 0, 2);
+        Assertions.assertEquals(0, itemDtoList.size());
     }
 
     @Test

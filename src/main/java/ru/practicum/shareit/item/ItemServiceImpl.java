@@ -160,10 +160,6 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemDto setBookingInfo(ItemDto itemDto) {
 
-        if (itemDto == null) {
-            return null;
-        }
-
         Booking lastBooking = bookingRepository
                 .findFirstByItemIdAndStartBeforeOrderByStartDesc(itemDto.getId(), LocalDateTime.now())
                 .orElse(null);
