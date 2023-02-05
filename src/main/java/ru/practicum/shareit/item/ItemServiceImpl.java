@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
@@ -49,8 +51,7 @@ public class ItemServiceImpl implements ItemService {
                     .orElseThrow(() -> new EntryUnknownException("No itemRequest with id = " + itemDto.getRequestId())));
         }
 
-        itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
@@ -80,8 +81,7 @@ public class ItemServiceImpl implements ItemService {
                     .orElseThrow(() -> new EntryUnknownException("No itemRequest with id = " + itemDto.getRequestId())));
         }
 
-        itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
@@ -101,8 +101,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findAllItemsByOwner(long userId) {
-        return itemRepository.findAllByOwnerIdOrderById(userId).stream()
+    public List<ItemDto> findAllItemsByOwner(long userId, int from, int size) {
+        return itemRepository.findAllByOwnerId(userId,
+                        PageRequest.of(from / size, size,
+                                Sort.by(Sort.Direction.ASC, "owner")))
+                .stream()
                 .map(ItemMapper::toItemDto)
                 .map(itemDto -> {
                     return setBookingInfo(itemDto);
@@ -115,11 +118,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findByText(String text) {
+    public List<ItemDto> findByText(String text, int from, int size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemRepository.searchItemsByText(text).stream()
+        return itemRepository.searchItemsByText(text,
+                        PageRequest.of(from / size, size,
+                                Sort.by(Sort.Direction.ASC, "owner")))
+                .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -153,10 +159,6 @@ public class ItemServiceImpl implements ItemService {
 
 
     private ItemDto setBookingInfo(ItemDto itemDto) {
-
-        if (itemDto == null) {
-            return null;
-        }
 
         Booking lastBooking = bookingRepository
                 .findFirstByItemIdAndStartBeforeOrderByStartDesc(itemDto.getId(), LocalDateTime.now())

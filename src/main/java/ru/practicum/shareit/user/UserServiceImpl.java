@@ -45,7 +45,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto deleteById(long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntryUnknownException("No user with id = " + id));
         userRepository.deleteById(id);
         return UserMapper.toUserDto(user);
     }

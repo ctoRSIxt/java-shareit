@@ -39,11 +39,6 @@ public class ErrorHandler {
         return errors;
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleValidationException(final DuplicateEmailException e) {
-        return Map.of("DuplicateEmailException", e.getMessage());
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)

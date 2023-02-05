@@ -39,6 +39,7 @@ public class BookingDto {
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class User {
         private long id;
