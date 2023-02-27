@@ -31,12 +31,6 @@ public class BookingDto {
         private Boolean available;
     }
 
-    public static Item toInnerItem(ru.practicum.shareit.item.model.Item item0) {
-        return new Item(item0.getId(),
-                item0.getName(),
-                item0.getDescription(),
-                item0.getAvailable());
-    }
 
     @Data
     @NoArgsConstructor
@@ -45,12 +39,6 @@ public class BookingDto {
         private long id;
         private String name;
         private String email;
-    }
-
-    public static User toInnerUser(ru.practicum.shareit.user.model.User user0) {
-        return new User(user0.getId(),
-                user0.getName(),
-                user0.getEmail());
     }
 
 }

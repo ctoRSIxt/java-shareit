@@ -23,6 +23,7 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId,
                                          @RequestBody BookingDto bookingDto) {
+        log.info("Creating booking {}, userId={}", bookingDto, userId);
         return bookingClient.create(userId, bookingDto);
     }
 
@@ -31,12 +32,14 @@ public class BookingController {
     public ResponseEntity<Object> patchToApprove(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @PathVariable long bookingId, @RequestParam boolean approved) {
 
+        log.info("Approving booking {}, userId={}", bookingId, userId);
         return bookingClient.approveBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> findById(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @PathVariable long bookingId) {
+        log.info("Get booking {}, userId={}", bookingId, userId);
         return bookingClient.findById(userId, bookingId);
     }
 
@@ -48,6 +51,7 @@ public class BookingController {
                                                   @Positive @RequestParam(value = "size", defaultValue = "10")
                                                   int size) {
         State state = State.validateState(stateString);
+        log.info("Get booking with state {}, userId={}, from={}, size={}", stateString, userId, from, size);
         return bookingClient.findAllByBookerId(userId, state, from, size);
     }
 
@@ -60,6 +64,8 @@ public class BookingController {
                                                    int size) {
 
         State state = State.validateState(stateString);
+        log.info("Get bookings with state {}, owned by userId={}, from={}, size={}",
+                stateString, ownerId, from, size);
         return bookingClient.findAllByOwnerId(ownerId, state, from, size);
     }
 }
