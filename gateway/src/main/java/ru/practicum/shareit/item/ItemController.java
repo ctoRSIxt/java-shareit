@@ -10,7 +10,8 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 
 @Controller
@@ -36,11 +37,10 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> findAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                      @RequestParam(value = "from", defaultValue = "0")
-                                                      @Min(value = 0) int from,
-                                                      @RequestParam(value = "size", defaultValue = "10")
-                                                      @Min(value = 1) int size) {
+    public ResponseEntity<Object> findAllItemsByOwner(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @PositiveOrZero @RequestParam(value = "from", defaultValue = "0") int from,
+            @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("Getting all items by owner with id={}, from={}, size={}", userId, from, size);
         return itemClient.findAllItemsByOwner(userId, from, size);
     }
@@ -52,11 +52,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> findByText(@RequestParam String text,
-                                             @RequestParam(value = "from", defaultValue = "0")
-                                             @Min(value = 0) int from,
-                                             @RequestParam(value = "size", defaultValue = "10")
-                                             @Min(value = 1) int size) {
+    public ResponseEntity<Object> findByText(
+            @RequestParam String text,
+            @PositiveOrZero @RequestParam(value = "from", defaultValue = "0") int from,
+            @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("Finding item containing \"{}\" from={}, size={}", text, from, size);
         return itemClient.findByText(text, from, size);
     }

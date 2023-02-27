@@ -7,8 +7,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -19,14 +17,8 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    @NotBlank(message = "Name is mandatory")
     private String name;
-
-    @NotBlank(message = "Description is mandatory")
     private String description;
-
-    @NotNull(message = "Available should not be empty")
     private Boolean available;
 
     @ManyToOne(optional = false)

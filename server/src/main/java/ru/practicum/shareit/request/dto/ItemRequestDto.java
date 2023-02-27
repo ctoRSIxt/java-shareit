@@ -4,8 +4,6 @@ package ru.practicum.shareit.request.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import java.util.List;
 public class ItemRequestDto {
     private long id;
 
-    @NotBlank(message = "Description is mandatory")
     private String description;
     private long requestorId;
     private LocalDateTime created;
@@ -28,6 +25,10 @@ public class ItemRequestDto {
         this.created = created;
     }
 
+    public static Item toInnerItem(ru.practicum.shareit.item.model.Item item) {
+        return new Item(item.getId(), item.getName(), item.getDescription(),
+                item.getAvailable(), item.getRequest().getId(), item.getOwner().getId());
+    }
 
     @Data
     @AllArgsConstructor
@@ -39,10 +40,4 @@ public class ItemRequestDto {
         private long requestId;
         private long ownerId;
     }
-
-    public static Item toInnerItem(ru.practicum.shareit.item.model.Item item) {
-        return new Item(item.getId(), item.getName(), item.getDescription(),
-                item.getAvailable(), item.getRequest().getId(), item.getOwner().getId());
-    }
-
 }

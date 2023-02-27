@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 
@@ -25,7 +23,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId,
-                          @Valid @RequestBody ItemDto itemDto) {
+                          @RequestBody ItemDto itemDto) {
         return itemService.create(userId, itemDto);
     }
 
@@ -38,9 +36,9 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> findAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
                                              @RequestParam(value = "from", defaultValue = "0")
-                                             @Min(value = 0) int from,
+                                             int from,
                                              @RequestParam(value = "size", defaultValue = "10")
-                                             @Min(value = 1) int size) {
+                                             int size) {
         return itemService.findAllItemsByOwner(userId, from, size);
     }
 
@@ -52,14 +50,14 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> findByText(@RequestParam String text,
                                     @RequestParam(value = "from", defaultValue = "0")
-                                    @Min(value = 0) int from,
+                                    int from,
                                     @RequestParam(value = "size", defaultValue = "10")
-                                    @Min(value = 1) int size) {
+                                    int size) {
         return itemService.findByText(text, from, size);
     }
 
     @PostMapping("{itemId}/comment")
-    public CommentDto createComment(@Valid @RequestBody CommentDto commentDto,
+    public CommentDto createComment(@RequestBody CommentDto commentDto,
                                     @PathVariable long itemId,
                                     @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.createComment(commentDto, itemId, userId);
