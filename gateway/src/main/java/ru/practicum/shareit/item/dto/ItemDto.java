@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.model.Booking;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -44,15 +43,6 @@ public class ItemDto {
         private LocalDateTime created;
     }
 
-    public static Comment toInnerComment(ru.practicum.shareit.item.model.Comment comment) {
-        return new Comment(
-                comment.getId(),
-                comment.getText(),
-                comment.getAuthor().getName(),
-                comment.getCreated()
-        );
-    }
-
 
     @Data
     @NoArgsConstructor
@@ -62,14 +52,4 @@ public class ItemDto {
         private long bookerId;
     }
 
-    public static BookingDtoForItem toBookingDtoForItem(Booking booking) {
-        if (booking == null) {
-            return null;
-        }
-
-        return new BookingDtoForItem(
-                booking.getId(),
-                booking.getBooker().getId()
-        );
-    }
 }
