@@ -2,7 +2,7 @@ version: '3.8'
 services:
   gateway:
     build: ./gateway
-    image: gateway
+    image: shareit_gateway
     container_name: gateway
     ports:
       - "8080:8080"
@@ -13,8 +13,11 @@ services:
 
   server:
     build: ./server
-    image: server
+    image: shareit_server
     container_name: server
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
     ports:
       - "9090:9090"
     depends_on:

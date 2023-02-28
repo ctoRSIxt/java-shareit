@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> findAllItemsByOwner(long userId, int from, int size) {
         return itemRepository.findAllByOwnerId(userId,
                         PageRequest.of(from / size, size,
-                                Sort.by(Sort.Direction.ASC, "owner")))
+                                Sort.by(Sort.Direction.ASC, "id")))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .map(itemDto -> {
