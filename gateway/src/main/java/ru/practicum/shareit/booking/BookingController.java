@@ -32,7 +32,7 @@ public class BookingController {
     public ResponseEntity<Object> patchToApprove(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @PathVariable long bookingId, @RequestParam boolean approved) {
 
-        log.info("Approving booking {}, userId={}", bookingId, userId);
+        log.info("Approving booking {}, userId={}, approved={}", bookingId, userId, approved);
         return bookingClient.approveBooking(userId, bookingId, approved);
     }
 
@@ -45,27 +45,26 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Object> findAllByUserId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                  @RequestParam(defaultValue = "ALL") String stateString,
+                                                  @RequestParam(defaultValue = "ALL") String state,
                                                   @PositiveOrZero @RequestParam(value = "from", defaultValue = "0")
                                                   int from,
                                                   @Positive @RequestParam(value = "size", defaultValue = "10")
                                                   int size) {
-        State state = State.validateState(stateString);
-        log.info("Get booking with state {}, userId={}, from={}, size={}", stateString, userId, from, size);
-        return bookingClient.findAllByBookerId(userId, state, from, size);
+        log.info("Get booking with state {}, userId={}, from={}, size={}", state, userId, from, size);
+        State stateState = State.validateState(state);
+        return bookingClient.findAllByBookerId(userId, stateState, from, size);
     }
 
     @GetMapping("/owner")
     public ResponseEntity<Object> findAllByOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId,
-                                                   @RequestParam(defaultValue = "ALL") String stateString,
+                                                   @RequestParam(defaultValue = "ALL") String state,
                                                    @PositiveOrZero @RequestParam(value = "from", defaultValue = "0")
                                                    int from,
                                                    @Positive @RequestParam(value = "size", defaultValue = "10")
                                                    int size) {
-
-        State state = State.validateState(stateString);
         log.info("Get bookings with state {}, owned by userId={}, from={}, size={}",
-                stateString, ownerId, from, size);
-        return bookingClient.findAllByOwnerId(ownerId, state, from, size);
+                state, ownerId, from, size);
+        State stateState = State.validateState(state);
+        return bookingClient.findAllByOwnerId(ownerId, stateState, from, size);
     }
 }

@@ -34,12 +34,12 @@ public class ItemRequestClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> findAll(int from, int size, long userId) {
+    public ResponseEntity<Object> findAll(Integer from, Integer size, long userId) {
         Map<String, Object> parameters = Map.of("from", from, "size", size);
         return get("/all", userId, parameters);
     }
 
-    public ResponseEntity<Object> findById(long requestId, long userId) {
+    public ResponseEntity<Object> findById(Long requestId, long userId) {
         Map<String, Object> parameters = Map.of("requestId", requestId);
         return get("/{requestId}", userId, parameters);
     }
