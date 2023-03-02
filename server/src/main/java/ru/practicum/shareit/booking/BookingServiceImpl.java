@@ -95,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByBookerId(long bookerId, String stateString, int from, int size) {
 
         validateUserId(bookerId);
-        State state = State.validateState(stateString);
+        State state = State.valueOf(stateString);
         Page<Booking> result;
 
         PageRequest pageRequest = PageRequest.of(from / size, size,
@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> findAllByOwnerId(long ownerId, String stateString, int from, int size) {
         validateUserId(ownerId);
-        State state = State.validateState(stateString);
+        State state = State.valueOf(stateString);
         Page<Booking> result;
 
 
