@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.State;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -22,7 +23,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId,
-                                         @RequestBody BookingDto bookingDto) {
+                                         @Valid @RequestBody BookingDto bookingDto) {
         log.info("Creating booking {}, userId={}", bookingDto, userId);
         return bookingClient.create(userId, bookingDto);
     }

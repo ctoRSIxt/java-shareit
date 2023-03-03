@@ -203,18 +203,6 @@ public class BookingServiceImpl implements BookingService {
             throw new EntryUnknownException("Owner with id " + bookerId + " cannot book his/her own items");
         }
 
-
-        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new ValidationException("End date " +
-                    bookingDto.getEnd() + " cannot be before start date " + bookingDto.getStart());
-        }
-
-
-        if (bookingDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Start date " +
-                    bookingDto.getStart() + " is in a past, now is " + LocalDateTime.now());
-        }
-
     }
 
 }

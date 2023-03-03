@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.EntryUnknownException;
-import ru.practicum.shareit.exceptions.StateValidationException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -224,22 +223,6 @@ public class BookingTests {
 
         booking1.setStatus(BookingStatus.REJECTED);
         Assertions.assertEquals(BookingMapper.toBookingDto(booking1), bookingDto);
-    }
-
-
-    @Test
-    public void findByBookerWrongStateTest() {
-        Mockito.when(userService.findById(Mockito.anyLong()))
-                .thenReturn(UserMapper.toUserDto(user1));
-
-        final StateValidationException exception = Assertions.assertThrows(
-                StateValidationException.class,
-                () -> {
-                    bookingService.findAllByBookerId(2L,
-                            "WRONGSTATE", 0, 2);
-                }
-        );
-
     }
 
 
